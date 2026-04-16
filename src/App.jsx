@@ -494,6 +494,9 @@ export default function App() {
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [pendingAutoUpload, setPendingAutoUpload] = useState(false);
+  const [managerView, setManagerView] = useState(false);
+  const [savedEvaluations, setSavedEvaluations] = useState([]);
+  const [isLoadingSaved, setIsLoadingSaved] = useState(false);
   const certificateRef = useRef(null);
   const pdfCertificateRef = useRef(null);
   const tokenClientRef = useRef(null);
@@ -784,7 +787,7 @@ export default function App() {
     formData.append("file", blob, fileName);
 
     const response = await fetch(
-      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink&supportsAllDrives=true",
       {
         method: "POST",
         headers: {
@@ -795,7 +798,20 @@ export default function App() {
     );
 
     if (!response.ok) {
-      throw new Error("Drive upload failed.");
+      let errorMessage = "Drive upload failed.";
+      try {
+        const errorData = await response.json();
+        errorMessage =
+          errorData?.error?.message ||
+          errorData?.error_description ||
+          errorMessage;
+      } catch {
+        const fallbackText = await response.text();
+        if (fallbackText) {
+          errorMessage = fallbackText;
+        }
+      }
+      throw new Error(errorMessage);
     }
 
     return await response.json();
@@ -821,6 +837,105 @@ export default function App() {
     totalScore: data.totalScore || 0,
     autoMessage: data.message || "",
   });
+
+  const buildCertificateDataFromRecord = (record) => ({
+    studentName: record.studentName || "",
+    level: Number(record.level) || 1,
+    skills: {
+      listening: record.radarValues?.listening || 1,
+      reading: record.radarValues?.reading || 1,
+      writing: record.radarValues?.writing || 1,
+      speaking: record.radarValues?.speaking || 1,
+      attitude: record.radarValues?.attitude || 1,
+    },
+    totalScore: record.totalScore || 0,
+    message: record.autoMessage || "",
+    rubricTexts: record.rubricTexts || [],
+    rubricHeadings: record.rubricHeadings || [],
+    rubricScores: record.rubricScores || [],
+    teacherName: record.teacherName || "",
+    certificateDate: record.certificateDate || todayIso,
+  });
+
+  const loadSavedEvaluations = async (silent = false) => {
+    try {
+      setIsLoadingSaved(true);
+      const token = driveAccessToken || (await ensureGoogleAccess(""));
+      const query = encodeURIComponent(
+        `'${GOOGLE_DRIVE_FOLDER_ID}' in parents and mimeType='application/json' and trashed=false`
+      );
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q=${query}&fields=files(id,name,createdTime,modifiedTime)&orderBy=modifiedTime desc&includeItemsFromAllDrives=true&supportsAllDrives=true`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.ok) {
+        let errorMessage = "Could not load saved evaluations from Google Drive.";
+        try {
+          const errorData = await response.json();
+          errorMessage =
+            errorData?.error?.message ||
+            errorData?.error_description ||
+            errorMessage;
+        } catch {
+          const fallbackText = await response.text();
+          if (fallbackText) {
+            errorMessage = fallbackText;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      const result = await response.json();
+      setSavedEvaluations(result.files || []);
+      if (!silent) {
+        setUploadStatus(`${(result.files || []).length} saved evaluations loaded.`);
+      }
+    } catch (error) {
+      setUploadStatus(error.message || "Failed to load saved evaluations.");
+    } finally {
+      setIsLoadingSaved(false);
+    }
+  };
+
+  const openSavedEvaluation = async (fileId) => {
+    try {
+      const token = driveAccessToken || (await ensureGoogleAccess(""));
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!response.ok) {
+        let errorMessage = "Could not open this saved evaluation.";
+        try {
+          const errorData = await response.json();
+          errorMessage =
+            errorData?.error?.message ||
+            errorData?.error_description ||
+            errorMessage;
+        } catch {
+          const fallbackText = await response.text();
+          if (fallbackText) {
+            errorMessage = fallbackText;
+          }
+        }
+        throw new Error(errorMessage);
+      }
+
+      const record = await response.json();
+      setCertificateData(buildCertificateDataFromRecord(record));
+      setShowCertificate(true);
+      setManagerView(false);
+      setUploadStatus(`Loaded saved evaluation for ${record.studentName || "student"}.`);
+    } catch (error) {
+      setUploadStatus(error.message || "Failed to open the saved evaluation.");
+    }
+  };
 
   const uploadCertificateToDrive = async (data = certificateData) => {
     if (!data) {
@@ -902,12 +1017,12 @@ export default function App() {
   };
 
   const handleOpenSavedFiles = () => {
-    if (!GOOGLE_DRIVE_FOLDER_URL) {
+    if (!GOOGLE_DRIVE_FOLDER_ID) {
       setUploadStatus("Google Drive folder is not configured yet.");
       return;
     }
-
-    window.open(GOOGLE_DRIVE_FOLDER_URL, "_blank", "noopener,noreferrer");
+    setManagerView(true);
+    loadSavedEvaluations();
   };
 
   const handleManualDriveUpload = async () => {
@@ -1115,6 +1230,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
       setShowCertificate(false);
       setCertificateData(null);
       setPendingAutoUpload(false);
+      setManagerView(false);
       setUploadStatus("");
       lastAutoUploadKeyRef.current = "";
     }
@@ -1474,6 +1590,70 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
       </div>
 
       <main className="max-w-6xl mx-auto p-4 space-y-6">
+        {managerView && (
+          <section className="content-panel content-panel--board space-y-4">
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <div>
+                <h2 className="text-base font-bold">Saved Evaluations</h2>
+                <p className="text-sm text-slate-500 mt-1">
+                  Open a saved teacher evaluation from Google Drive and print it from this PC.
+                </p>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => loadSavedEvaluations()}
+                  className="action-button action-button--secondary px-4 py-2 rounded-lg"
+                  disabled={isLoadingSaved}
+                >
+                  {isLoadingSaved ? "Refreshing..." : "Refresh List"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => window.open(GOOGLE_DRIVE_FOLDER_URL, "_blank", "noopener,noreferrer")}
+                  className="action-button action-button--secondary px-4 py-2 rounded-lg"
+                  disabled={!GOOGLE_DRIVE_FOLDER_URL}
+                >
+                  Open Drive Folder
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setManagerView(false)}
+                  className="action-button action-button--secondary px-4 py-2 rounded-lg"
+                >
+                  Back to Evaluation
+                </button>
+              </div>
+            </div>
+
+            <div className="saved-evaluations-list">
+              {savedEvaluations.length ? (
+                savedEvaluations.map((file) => (
+                  <div key={file.id} className="saved-evaluation-card">
+                    <div>
+                      <div className="saved-evaluation-card__title">{file.name}</div>
+                      <div className="saved-evaluation-card__meta">
+                        Updated {file.modifiedTime ? new Date(file.modifiedTime).toLocaleString() : "—"}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => openSavedEvaluation(file.id)}
+                      className="action-button action-button--primary px-4 py-2 rounded-lg"
+                    >
+                      Open & Print
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="saved-evaluations-empty">
+                  {isLoadingSaved ? "Loading saved evaluations..." : "No saved evaluations found yet."}
+                </div>
+              )}
+            </div>
+          </section>
+        )}
+
         <section className="hero-panel">
           <div className="hero-panel__content">
             <h2 className="hero-title">Teacher Evaluation Section</h2>
