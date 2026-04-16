@@ -930,6 +930,276 @@ body {
   overflow: visible;
 }
 
+.pdf-export-root {
+  position: fixed;
+  left: -10000px;
+  top: 0;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pdf-certificate-page {
+  width: 297mm;
+  height: 210mm;
+  position: relative;
+  background: #fffaf5;
+  color: #312734;
+  border: 1.2mm solid #e3c28e;
+  box-sizing: border-box;
+  overflow: hidden;
+  font-family: "Merriweather", "Noto Serif JP", "Noto Sans JP",
+    "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", serif;
+}
+
+.pdf-certificate-page--a5 {
+  width: 210mm;
+  height: 148mm;
+}
+
+.pdf-certificate-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 4mm;
+  height: 100%;
+  padding: 6mm;
+  box-sizing: border-box;
+}
+
+.pdf-mascot-watermark {
+  position: absolute;
+  right: -12mm;
+  top: 54%;
+  width: 118mm;
+  opacity: 0.1;
+  z-index: 1;
+}
+
+.pdf-certificate-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8mm;
+}
+
+.pdf-school-brand {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+}
+
+.pdf-school-logo {
+  height: 18mm;
+  width: auto;
+}
+
+.pdf-school-mascot {
+  width: 12mm;
+  height: 12mm;
+  object-fit: contain;
+}
+
+.pdf-meta-group {
+  display: flex;
+  gap: 2.5mm;
+}
+
+.pdf-meta-chip {
+  background: #fffdf9;
+  border: 0.35mm solid #e6d4b7;
+  border-radius: 999px;
+  padding: 1.6mm 3mm;
+  font-size: 10.5px;
+  color: #5d5362;
+}
+
+.pdf-certificate-grid {
+  display: grid;
+  grid-template-columns: 1.02fr 1.38fr;
+  gap: 4mm;
+  min-height: 0;
+}
+
+.pdf-left-column,
+.pdf-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 3mm;
+  min-height: 0;
+}
+
+.pdf-header-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4mm;
+  border-radius: 5mm;
+  padding: 2.4mm 3.4mm;
+  color: #fff;
+  background: linear-gradient(135deg, #df7697 0%, #e8a164 55%, #d7b153 100%);
+}
+
+.pdf-header-label {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.pdf-header-value {
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.pdf-radar-card,
+.pdf-message-box,
+.pdf-rubric-card {
+  background: rgba(255, 255, 255, 0.96);
+  border: 0.45mm solid #ecd8b9;
+  border-radius: 5mm;
+  box-sizing: border-box;
+}
+
+.pdf-radar-card {
+  flex: 1;
+  padding: 3mm 3.2mm 2.2mm;
+}
+
+.pdf-radar-legend {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2mm 2.2mm;
+  max-width: 70mm;
+  margin: 1mm auto 0;
+  font-size: 10px;
+  color: #655b66;
+}
+
+.pdf-radar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 1.4mm;
+}
+
+.pdf-radar-dot {
+  width: 2mm;
+  height: 2mm;
+  border-radius: 999px;
+  background: #df7b90;
+}
+
+.pdf-radar-label {
+  flex: 1;
+}
+
+.pdf-radar-score {
+  font-weight: 700;
+  color: #2f2734;
+}
+
+.pdf-message-ribbon {
+  border-radius: 999px;
+  background: linear-gradient(135deg, #df7697 0%, #d8b053 100%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-align: center;
+  padding: 2mm 4mm;
+}
+
+.pdf-message-box {
+  min-height: 28mm;
+  padding: 3mm 3.4mm;
+  font-size: 10.8px;
+  line-height: 1.55;
+  color: #5f5663;
+  white-space: pre-line;
+}
+
+.pdf-rubric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3mm;
+  flex: 1;
+}
+
+.pdf-rubric-card {
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 2.2mm;
+  padding: 2.8mm 3mm;
+  border-top: 0.9mm solid #f1c4cb;
+}
+
+.pdf-rubric-title {
+  text-align: center;
+  font-size: 10.6px;
+  font-weight: 700;
+  color: #3b3140;
+}
+
+.pdf-rubric-body {
+  border-radius: 3.5mm;
+  background: #fffdf9;
+  border: 0.28mm solid #efe1c8;
+  padding: 2mm 2.4mm;
+  font-size: 9.6px;
+  line-height: 1.45;
+  color: #625868;
+}
+
+.pdf-rating-dots {
+  display: flex;
+  justify-content: center;
+  gap: 1.5mm;
+}
+
+.pdf-rating-dot {
+  width: 7mm;
+  height: 7mm;
+  border-radius: 999px;
+  border: 0.4mm solid #b7b0bb;
+  background: #ffffff;
+  color: #72697a;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 700;
+  box-sizing: border-box;
+}
+
+.pdf-rating-dot--active {
+  border-color: #ddaf42;
+  background: #f8c847;
+  color: #ffffff;
+}
+
+.pdf-certificate-page .radar-svg {
+  max-width: 70mm;
+}
+
+.pdf-certificate-page .radar-svg polygon {
+  stroke: #d68195;
+  fill: rgba(230, 160, 134, 0.08);
+}
+
+.pdf-certificate-page .radar-svg polygon:last-of-type {
+  stroke: #de748f;
+  fill: rgba(230, 160, 134, 0.2);
+}
+
+.pdf-certificate-page .radar-svg line {
+  stroke: #dbc8d3;
+}
+
+.pdf-certificate-page .radar-svg text {
+  fill: #4b4250;
+}
+
 .mascot-watermark {
   position: absolute;
   left: auto;

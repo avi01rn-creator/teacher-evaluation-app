@@ -265,7 +265,7 @@ const RadarChart = ({ values, labels }) => {
   return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
-      className="mx-auto radar-svg"
+      className="radar-svg"
       role="img"
       aria-label="Skill radar chart"
     >
@@ -393,6 +393,19 @@ const ScoreBar = ({ score, onSelect, showMascot = false }) => (
   </div>
 );
 
+const PdfRatingDots = ({ score }) => (
+  <div className="pdf-rating-dots" aria-label={`Score ${score || 1} out of 5`}>
+    {[1, 2, 3, 4, 5].map((value) => (
+      <span
+        key={value}
+        className={`pdf-rating-dot ${value === score ? "pdf-rating-dot--active" : ""}`}
+      >
+        {value}
+      </span>
+    ))}
+  </div>
+);
+
 /* =======================
    APP
 ======================= */
@@ -419,6 +432,7 @@ export default function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [pendingAutoUpload, setPendingAutoUpload] = useState(false);
   const certificateRef = useRef(null);
+  const pdfCertificateRef = useRef(null);
   const tokenClientRef = useRef(null);
   const lastAutoUploadKeyRef = useRef("");
   const levelRubricHeadings = getLevelRubricHeadings(Number(level));
@@ -626,7 +640,7 @@ export default function App() {
       throw new Error("Certificate preview is not ready yet.");
     }
 
-    const sourceCertificate = certificateRef.current;
+    const sourceCertificate = pdfCertificateRef.current || certificateRef.current;
     const exportScale = isIOSDevice() ? 2 : 4;
 
     const canvas = await html2canvas(sourceCertificate, {
@@ -1189,6 +1203,86 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
                         )
                       )}
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="pdf-export-root" aria-hidden="true">
+          <div
+            id="certificate-pdf"
+            ref={pdfCertificateRef}
+            className={`pdf-certificate-page ${printSize === "A5" ? "pdf-certificate-page--a5" : "pdf-certificate-page--a4"}`}
+          >
+            <img
+              className="pdf-mascot-watermark"
+              src="/character-luca-neutral.png"
+              alt=""
+            />
+            <div className="pdf-certificate-inner">
+              <div className="pdf-certificate-meta">
+                <div className="pdf-school-brand">
+                  <img
+                    src="/logo-clean2.png?v=1"
+                    alt="Linglow English School"
+                    className="pdf-school-logo"
+                  />
+                  <img
+                    src="/character-luca-happy.png"
+                    alt=""
+                    className="pdf-school-mascot"
+                  />
+                </div>
+                <div className="pdf-meta-group">
+                  <div className="pdf-meta-chip">Teacher: {certificateData.teacherName || "—"}</div>
+                  <div className="pdf-meta-chip">Date: {certificateData.certificateDate || "—"}</div>
+                </div>
+              </div>
+
+              <div className="pdf-certificate-grid">
+                <div className="pdf-left-column">
+                  <div className="pdf-header-band">
+                    <span className="pdf-header-label">★ 総合評価</span>
+                    <strong className="pdf-header-value">{certificateData.studentName}</strong>
+                  </div>
+
+                  <div className="pdf-radar-card">
+                    <RadarChart values={radarValues} labels={RADAR_LABELS} />
+                    <div className="pdf-radar-legend">
+                      {RADAR_LABELS.map((label, idx) => (
+                        <div key={label} className="pdf-radar-legend-item">
+                          <span className="pdf-radar-dot" />
+                          <span className="pdf-radar-label">{label}</span>
+                          <span className="pdf-radar-score">{radarValues[idx]}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pdf-message-ribbon">MESSAGE</div>
+                  <div className="pdf-message-box">
+                    {certificateData.message || "No comment provided."}
+                  </div>
+                </div>
+
+                <div className="pdf-right-column">
+                  <div className="pdf-header-band">
+                    <span className="pdf-header-label">Competency Assessment (主要能力の評価)</span>
+                    <strong className="pdf-header-value">Lv.{certificateData.level}</strong>
+                  </div>
+
+                  <div className="pdf-rubric-grid">
+                    {(certificateData.rubricHeadings || levelRubricHeadings).map((heading, idx) => (
+                      <div key={`pdf-${heading}-${idx}`} className="pdf-rubric-card">
+                        <div className="pdf-rubric-title">{heading}</div>
+                        <PdfRatingDots score={certificateData.rubricScores?.[idx]} />
+                        <div className="pdf-rubric-body">
+                          {certificateData.rubricTexts?.[idx] || ""}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
