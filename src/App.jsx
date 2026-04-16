@@ -211,6 +211,14 @@ const applyPdfSafeInlineStyles = (sourceRoot, clonedRoot) => {
   });
 };
 
+const isIOSDevice = () => {
+  if (typeof window === "undefined") return false;
+  const userAgent = window.navigator.userAgent || "";
+  const platform = window.navigator.platform || "";
+  const touchPoints = window.navigator.maxTouchPoints || 0;
+  return /iPad|iPhone|iPod/i.test(userAgent) || (platform === "MacIntel" && touchPoints > 1);
+};
+
 const RadarChart = ({ values, labels }) => {
   const size = 360;
   const padding = 44;
@@ -597,11 +605,13 @@ export default function App() {
     }
 
     const sourceCertificate = certificateRef.current;
+    const exportScale = isIOSDevice() ? 2 : 4;
 
     const canvas = await html2canvas(sourceCertificate, {
-      scale: 4,
+      scale: exportScale,
       useCORS: true,
       backgroundColor: "#ffffff",
+      logging: false,
       onclone: (clonedDocument) => {
         clonedDocument.querySelectorAll("style").forEach((styleTag) => {
           if (
@@ -631,7 +641,7 @@ export default function App() {
     const pageHeight = pdf.internal.pageSize.getHeight();
     const imageData = canvas.toDataURL("image/png");
 
-    pdf.addImage(imageData, "PNG", 0, 0, pageWidth, pageHeight, undefined, "FAST");
+    pdf.addImage(imageData, "PNG", 0, 0, pageWidth, pageHeight, undefined, "SLOW");
     return pdf.output("blob");
   };
 
@@ -744,7 +754,11 @@ export default function App() {
       downloadLink.click();
       document.body.removeChild(downloadLink);
       window.URL.revokeObjectURL(objectUrl);
-      setUploadStatus("PDF downloaded. Print the saved PDF for the most reliable result on iPad.");
+      setUploadStatus(
+        isIOSDevice()
+          ? "PDF downloaded with iPad-safe export settings. Please print the saved file."
+          : "PDF downloaded. Print the saved PDF for the most reliable result."
+      );
     } catch (error) {
       setUploadStatus(error.message || "PDF download failed.");
     }
