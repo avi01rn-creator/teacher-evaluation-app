@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download, FolderOpen } from "lucide-react";
 import html2canvas from "html2canvas";
+import { jsPDF } from "jspdf";
 import "./App.css";
 
 /* =======================
@@ -20,8 +21,10 @@ const GOOGLE_CONFIGURED =
   GOOGLE_DRIVE_FOLDER_ID &&
   !GOOGLE_CLIENT_ID.includes("PASTE_YOUR") &&
   !GOOGLE_DRIVE_FOLDER_ID.includes("PASTE_YOUR");
+const EXPORT_WIDTH = 2480;
+const EXPORT_HEIGHT = 1754;
 const EXPORT_TEMPLATE_BACKGROUND = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
-  <svg xmlns="http://www.w3.org/2000/svg" width="1123" height="794" viewBox="0 0 1123 794">
+  <svg xmlns="http://www.w3.org/2000/svg" width="${EXPORT_WIDTH}" height="${EXPORT_HEIGHT}" viewBox="0 0 ${EXPORT_WIDTH} ${EXPORT_HEIGHT}">
     <defs>
       <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#fff7f8"/>
@@ -41,12 +44,12 @@ const EXPORT_TEMPLATE_BACKGROUND = `data:image/svg+xml;charset=UTF-8,${encodeURI
         <stop offset="100%" stop-color="rgba(176,220,233,0)"/>
       </radialGradient>
     </defs>
-    <rect width="1123" height="794" rx="26" fill="url(#bg)"/>
-    <rect x="14" y="14" width="1095" height="766" rx="22" fill="none" stroke="rgba(231,196,145,0.95)" stroke-width="2"/>
-    <rect x="3" y="3" width="1117" height="788" rx="24" fill="none" stroke="rgba(227,194,142,0.92)" stroke-width="3"/>
-    <rect width="1123" height="794" rx="26" fill="url(#warm)"/>
-    <rect width="1123" height="794" rx="26" fill="url(#rose)"/>
-    <rect width="1123" height="794" rx="26" fill="url(#sky)"/>
+    <rect width="${EXPORT_WIDTH}" height="${EXPORT_HEIGHT}" rx="26" fill="url(#bg)"/>
+    <rect x="14" y="14" width="${EXPORT_WIDTH - 28}" height="${EXPORT_HEIGHT - 28}" rx="22" fill="none" stroke="rgba(231,196,145,0.95)" stroke-width="2"/>
+    <rect x="3" y="3" width="${EXPORT_WIDTH - 6}" height="${EXPORT_HEIGHT - 6}" rx="24" fill="none" stroke="rgba(227,194,142,0.92)" stroke-width="3"/>
+    <rect width="${EXPORT_WIDTH}" height="${EXPORT_HEIGHT}" rx="26" fill="url(#warm)"/>
+    <rect width="${EXPORT_WIDTH}" height="${EXPORT_HEIGHT}" rx="26" fill="url(#rose)"/>
+    <rect width="${EXPORT_WIDTH}" height="${EXPORT_HEIGHT}" rx="26" fill="url(#sky)"/>
   </svg>
 `)}`;
 const FALLBACK_RUBRIC_HEADINGS = [
@@ -708,7 +711,7 @@ export default function App() {
     await waitForImages(sourceCertificate);
 
     const canvas = await html2canvas(sourceCertificate, {
-      scale: 4,
+      scale: 1,
       useCORS: true,
       backgroundColor: null,
       logging: false,
@@ -740,7 +743,7 @@ export default function App() {
       },
     });
 
-    return await new Promise((resolve, reject) => {
+    const pngBlob = await new Promise((resolve, reject) => {
       canvas.toBlob((blob) => {
         if (!blob) {
           reject(new Error("Image export failed."));
@@ -749,6 +752,21 @@ export default function App() {
         resolve(blob);
       }, "image/png");
     });
+
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF({
+      orientation: "landscape",
+      unit: "px",
+      format: [canvas.width, canvas.height],
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    const pdfBlob = pdf.output("blob");
+
+    return {
+      pngBlob,
+      pdfBlob,
+    };
   };
 
   const uploadDriveFile = async ({ token, fileName, mimeType, blob }) => {
@@ -814,7 +832,7 @@ export default function App() {
     }
 
     const token = driveAccessToken || (await ensureGoogleAccess(""));
-    const imageBlob = await buildCertificateImageBlob();
+    const { pngBlob } = await buildCertificateImageBlob();
     const record = buildEvaluationRecord(data);
     const recordBlob = new Blob([JSON.stringify(record, null, 2)], {
       type: "application/json",
@@ -832,7 +850,7 @@ export default function App() {
         token,
         fileName: imageFileName,
         mimeType: "image/png",
-        blob: imageBlob,
+        blob: pngBlob,
       });
 
       const recordResult = await uploadDriveFile({
@@ -903,11 +921,11 @@ export default function App() {
   const handleDownloadPdf = async () => {
     try {
       setUploadStatus("Preparing high-resolution image...");
-      const imageBlob = await buildCertificateImageBlob();
+      const { pngBlob } = await buildCertificateImageBlob();
       const safeStudentName = (certificateData?.studentName || "student").replace(/[^\w.-]+/g, "_");
       const safeDate = (certificateData?.certificateDate || todayIso).replace(/[^\d-]+/g, "-");
       const fileName = `${safeStudentName}_Lv${certificateData?.level || level}_${safeDate}.png`;
-      const objectUrl = window.URL.createObjectURL(imageBlob);
+      const objectUrl = window.URL.createObjectURL(pngBlob);
       const downloadLink = document.createElement("a");
       downloadLink.href = objectUrl;
       downloadLink.download = fileName;

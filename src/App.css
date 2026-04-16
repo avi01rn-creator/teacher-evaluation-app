@@ -948,15 +948,15 @@ body {
   position: fixed;
   left: -10000px;
   top: 0;
-  width: 1123px;
-  height: 794px;
+  width: 2480px;
+  height: 1754px;
   overflow: visible;
   pointer-events: none;
 }
 
 .pdf-certificate-page {
-  width: 1123px;
-  height: 794px;
+  width: 2480px;
+  height: 1754px;
   position: relative;
   background: transparent;
   color: #312734;
@@ -967,8 +967,8 @@ body {
 }
 
 .pdf-certificate-page--a5 {
-  width: 1123px;
-  height: 794px;
+  width: 2480px;
+  height: 1754px;
 }
 
 .pdf-certificate-inner {
@@ -985,8 +985,8 @@ body {
 .pdf-template-background {
   position: absolute;
   inset: 0;
-  width: 1123px;
-  height: 794px;
+  width: 2480px;
+  height: 1754px;
   display: block;
   z-index: 0;
   pointer-events: none;
