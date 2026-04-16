@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut } from "lucide-react";
+import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download } from "lucide-react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import "./App.css";
@@ -670,6 +670,27 @@ export default function App() {
     }
   };
 
+  const handleDownloadPdf = async () => {
+    try {
+      setUploadStatus("Preparing PDF download...");
+      const pdfBlob = await buildCertificatePdfBlob();
+      const safeStudentName = (certificateData?.studentName || "student").replace(/[^\w.-]+/g, "_");
+      const safeDate = (certificateData?.certificateDate || todayIso).replace(/[^\d-]+/g, "-");
+      const fileName = `${safeStudentName}_Lv${certificateData?.level || level}_${safeDate}.pdf`;
+      const objectUrl = window.URL.createObjectURL(pdfBlob);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = objectUrl;
+      downloadLink.download = fileName;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      window.URL.revokeObjectURL(objectUrl);
+      setUploadStatus("PDF downloaded. Print the saved PDF for the most reliable result on iPad.");
+    } catch (error) {
+      setUploadStatus(error.message || "PDF download failed.");
+    }
+  };
+
   const buildRubricTexts = (headings, scores) =>
     scores.map((score, idx) => {
       const heading = headings[idx] || FALLBACK_RUBRIC_HEADINGS[idx] || "Skill";
@@ -892,6 +913,14 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
             <Printer size={16} />
             Print Certificate
           </button>
+          <button
+            type="button"
+            onClick={handleDownloadPdf}
+            className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <Download size={16} />
+            Download PDF
+          </button>
           <div className="print-size-switch" role="group" aria-label="Print size">
             {["A4", "A5"].map((size) => (
               <button
@@ -947,6 +976,12 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
             </div>
           </div>
         )}
+
+        <div className="no-print max-w-6xl mx-auto px-4 pb-4">
+          <div className="drive-status-pill">
+            iPad tip: use <strong>Download PDF</strong> first, then print the saved PDF for the most reliable colors, watermark, and text.
+          </div>
+        </div>
 
         <div className="flex justify-center px-4 pb-10">
           <div
