@@ -161,6 +161,56 @@ const sanitizeCssForPdf = (cssText) =>
     .replace(/oklab\([^)]+\)/g, "rgba(120, 120, 120, 0.4)")
     .replace(/color-mix\([^)]+\)/g, "rgba(255, 255, 255, 0.4)");
 
+const sanitizeStyleValue = (value) => {
+  if (!value || value === "none") return value;
+  return value
+    .replace(/oklch\([^)]+\)/g, "rgb(120, 120, 120)")
+    .replace(/oklab\([^)]+\)/g, "rgba(120, 120, 120, 0.4)")
+    .replace(/color-mix\([^)]+\)/g, "rgba(255, 255, 255, 0.4)");
+};
+
+const PDF_SAFE_STYLE_PROPS = [
+  "color",
+  "background",
+  "backgroundColor",
+  "backgroundImage",
+  "borderColor",
+  "borderTopColor",
+  "borderRightColor",
+  "borderBottomColor",
+  "borderLeftColor",
+  "outlineColor",
+  "textDecorationColor",
+  "boxShadow",
+  "textShadow",
+  "fill",
+  "stroke",
+];
+
+const applyPdfSafeInlineStyles = (sourceRoot, clonedRoot) => {
+  if (!sourceRoot || !clonedRoot) return;
+
+  const sourceElements = [sourceRoot, ...sourceRoot.querySelectorAll("*")];
+  const clonedElements = [clonedRoot, ...clonedRoot.querySelectorAll("*")];
+
+  clonedElements.forEach((clonedEl, index) => {
+    const sourceEl = sourceElements[index];
+    if (!sourceEl) return;
+
+    const computed = window.getComputedStyle(sourceEl);
+    PDF_SAFE_STYLE_PROPS.forEach((prop) => {
+      const safeValue = sanitizeStyleValue(computed[prop]);
+      if (safeValue && safeValue !== "initial") {
+        clonedEl.style[prop] = safeValue;
+      }
+    });
+
+    clonedEl.style.backdropFilter = "none";
+    clonedEl.style.webkitBackdropFilter = "none";
+    clonedEl.style.filter = "none";
+  });
+};
+
 const RadarChart = ({ values, labels }) => {
   const size = 360;
   const padding = 44;
@@ -546,16 +596,25 @@ export default function App() {
       throw new Error("Certificate preview is not ready yet.");
     }
 
-    const canvas = await html2canvas(certificateRef.current, {
+    const sourceCertificate = certificateRef.current;
+
+    const canvas = await html2canvas(sourceCertificate, {
       scale: 4,
       useCORS: true,
       backgroundColor: "#ffffff",
       onclone: (clonedDocument) => {
         clonedDocument.querySelectorAll("style").forEach((styleTag) => {
-          if (styleTag.textContent?.includes("oklch") || styleTag.textContent?.includes("oklab")) {
+          if (
+            styleTag.textContent?.includes("oklch") ||
+            styleTag.textContent?.includes("oklab") ||
+            styleTag.textContent?.includes("color-mix")
+          ) {
             styleTag.textContent = sanitizeCssForPdf(styleTag.textContent);
           }
         });
+
+        const clonedCertificate = clonedDocument.getElementById("certificate");
+        applyPdfSafeInlineStyles(sourceCertificate, clonedCertificate);
       },
     });
 
@@ -979,7 +1038,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
 
         <div className="no-print max-w-6xl mx-auto px-4 pb-4">
           <div className="drive-status-pill">
-            iPad tip: use <strong>Download PDF</strong> first, then print the saved PDF for the most reliable colors, watermark, and text.
+            For iPad use, please download the PDF first and then print the saved file for the most reliable colors, watermark, and text.
           </div>
         </div>
 
