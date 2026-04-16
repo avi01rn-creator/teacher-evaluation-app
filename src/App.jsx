@@ -645,13 +645,13 @@ export default function App() {
       });
     });
 
-  const buildCertificatePdfBlob = async () => {
+  const buildCertificateImageBlob = async () => {
     if (!certificateRef.current) {
       throw new Error("Certificate preview is not ready yet.");
     }
 
-    const sourceCertificate = pdfCertificateRef.current || certificateRef.current;
-    const exportScale = isIOSDevice() ? 2 : 4;
+    const sourceCertificate = certificateRef.current;
+    const exportScale = isIOSDevice() ? 3 : 4;
 
     const canvas = await html2canvas(sourceCertificate, {
       scale: exportScale,
@@ -686,21 +686,15 @@ export default function App() {
       },
     });
 
-    const orientation = printSize === "A5" ? "l" : "l";
-    const format = printSize.toLowerCase();
-    const pdf = new jsPDF({
-      orientation,
-      unit: "mm",
-      format,
-      compress: true,
+    return await new Promise((resolve, reject) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          reject(new Error("Image export failed."));
+          return;
+        }
+        resolve(blob);
+      }, "image/png");
     });
-
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const imageData = canvas.toDataURL("image/png");
-
-    pdf.addImage(imageData, "PNG", 0, 0, pageWidth, pageHeight, undefined, "SLOW");
-    return pdf.output("blob");
   };
 
   const uploadCertificateToDrive = async (data = certificateData) => {
@@ -713,14 +707,14 @@ export default function App() {
     }
 
     const token = driveAccessToken || (await ensureGoogleAccess(""));
-    const pdfBlob = await buildCertificatePdfBlob();
+    const imageBlob = await buildCertificateImageBlob();
     const safeStudentName = (data.studentName || "student").replace(/[^\w.-]+/g, "_");
     const safeDate = (data.certificateDate || todayIso).replace(/[^\d-]+/g, "-");
-    const fileName = `${safeStudentName}_Lv${data.level}_${safeDate}.pdf`;
+    const fileName = `${safeStudentName}_Lv${data.level}_${safeDate}.png`;
 
     const metadata = {
       name: fileName,
-      mimeType: "application/pdf",
+      mimeType: "image/png",
       parents: [GOOGLE_DRIVE_FOLDER_ID],
     };
 
@@ -729,10 +723,10 @@ export default function App() {
       "metadata",
       new Blob([JSON.stringify(metadata)], { type: "application/json" })
     );
-    formData.append("file", pdfBlob, fileName);
+    formData.append("file", imageBlob, fileName);
 
     setIsUploading(true);
-    setUploadStatus("Uploading certificate to Google Drive...");
+    setUploadStatus("Uploading certificate image to Google Drive...");
 
     try {
       const response = await fetch(
@@ -799,12 +793,12 @@ export default function App() {
 
   const handleDownloadPdf = async () => {
     try {
-      setUploadStatus("Preparing PDF download...");
-      const pdfBlob = await buildCertificatePdfBlob();
+      setUploadStatus("Preparing high-resolution image...");
+      const imageBlob = await buildCertificateImageBlob();
       const safeStudentName = (certificateData?.studentName || "student").replace(/[^\w.-]+/g, "_");
       const safeDate = (certificateData?.certificateDate || todayIso).replace(/[^\d-]+/g, "-");
-      const fileName = `${safeStudentName}_Lv${certificateData?.level || level}_${safeDate}.pdf`;
-      const objectUrl = window.URL.createObjectURL(pdfBlob);
+      const fileName = `${safeStudentName}_Lv${certificateData?.level || level}_${safeDate}.png`;
+      const objectUrl = window.URL.createObjectURL(imageBlob);
       const downloadLink = document.createElement("a");
       downloadLink.href = objectUrl;
       downloadLink.download = fileName;
@@ -814,11 +808,11 @@ export default function App() {
       window.URL.revokeObjectURL(objectUrl);
       setUploadStatus(
         isIOSDevice()
-          ? "PDF downloaded with iPad-safe export settings. Please print the saved file."
-          : "PDF downloaded. Print the saved PDF for the most reliable result."
+          ? "High-resolution image downloaded. Please print the saved file."
+          : "High-resolution image downloaded. Print the saved image for the most reliable result."
       );
     } catch (error) {
-      setUploadStatus(error.message || "PDF download failed.");
+      setUploadStatus(error.message || "Image download failed.");
     }
   };
 
@@ -1050,7 +1044,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
             className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <Download size={16} />
-            Download PDF
+            Download Image
           </button>
           <div className="print-size-switch" role="group" aria-label="Print size">
             {["A4", "A5"].map((size) => (
@@ -1110,7 +1104,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
 
         <div className="no-print max-w-6xl mx-auto px-4 pb-4">
           <div className="drive-status-pill">
-            For iPad use, please download the PDF first and then print the saved file for the most reliable colors, watermark, and text.
+            For iPad use, please download the image first and then print the saved file for the most reliable colors, watermark, and text.
           </div>
         </div>
 
