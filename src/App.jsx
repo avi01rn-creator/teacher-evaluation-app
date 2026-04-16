@@ -697,6 +697,59 @@ export default function App() {
     });
   };
 
+  const uploadDriveFile = async ({ token, fileName, mimeType, blob }) => {
+    const metadata = {
+      name: fileName,
+      mimeType,
+      parents: [GOOGLE_DRIVE_FOLDER_ID],
+    };
+
+    const formData = new FormData();
+    formData.append(
+      "metadata",
+      new Blob([JSON.stringify(metadata)], { type: "application/json" })
+    );
+    formData.append("file", blob, fileName);
+
+    const response = await fetch(
+      "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Drive upload failed.");
+    }
+
+    return await response.json();
+  };
+
+  const buildEvaluationRecord = (data) => ({
+    studentName: data.studentName || "",
+    level: data.level || "",
+    teacherName: data.teacherName || "",
+    certificateDate: data.certificateDate || "",
+    savedAt: new Date().toISOString(),
+    rubricHeadings: data.rubricHeadings || [],
+    rubricScores: data.rubricScores || [],
+    rubricTexts: data.rubricTexts || [],
+    radarLabels: RADAR_LABELS,
+    radarValues: {
+      listening: data.skills?.listening || 1,
+      reading: data.skills?.reading || 1,
+      writing: data.skills?.writing || 1,
+      speaking: data.skills?.speaking || 1,
+      attitude: data.skills?.attitude || 1,
+    },
+    totalScore: data.totalScore || 0,
+    autoMessage: data.message || "",
+  });
+
   const uploadCertificateToDrive = async (data = certificateData) => {
     if (!data) {
       throw new Error("No certificate data available to upload.");
@@ -708,45 +761,38 @@ export default function App() {
 
     const token = driveAccessToken || (await ensureGoogleAccess(""));
     const imageBlob = await buildCertificateImageBlob();
+    const record = buildEvaluationRecord(data);
+    const recordBlob = new Blob([JSON.stringify(record, null, 2)], {
+      type: "application/json",
+    });
     const safeStudentName = (data.studentName || "student").replace(/[^\w.-]+/g, "_");
     const safeDate = (data.certificateDate || todayIso).replace(/[^\d-]+/g, "-");
-    const fileName = `${safeStudentName}_Lv${data.level}_${safeDate}.png`;
-
-    const metadata = {
-      name: fileName,
-      mimeType: "image/png",
-      parents: [GOOGLE_DRIVE_FOLDER_ID],
-    };
-
-    const formData = new FormData();
-    formData.append(
-      "metadata",
-      new Blob([JSON.stringify(metadata)], { type: "application/json" })
-    );
-    formData.append("file", imageBlob, fileName);
+    const imageFileName = `${safeStudentName}_Lv${data.level}_${safeDate}.png`;
+    const recordFileName = `${safeStudentName}_Lv${data.level}_${safeDate}.json`;
 
     setIsUploading(true);
-    setUploadStatus("Uploading certificate image to Google Drive...");
+    setUploadStatus("Saving evaluation record to Google Drive...");
 
     try {
-      const response = await fetch(
-        "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,webViewLink",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          body: formData,
-        }
-      );
+      const imageResult = await uploadDriveFile({
+        token,
+        fileName: imageFileName,
+        mimeType: "image/png",
+        blob: imageBlob,
+      });
 
-      if (!response.ok) {
-        throw new Error("Drive upload failed.");
-      }
+      const recordResult = await uploadDriveFile({
+        token,
+        fileName: recordFileName,
+        mimeType: "application/json",
+        blob: recordBlob,
+      });
 
-      const result = await response.json();
-      setUploadStatus(`Saved to Google Drive as ${result.name}.`);
-      return result;
+      setUploadStatus(`Saved image and evaluation record to Google Drive.`);
+      return {
+        image: imageResult,
+        record: recordResult,
+      };
     } finally {
       setIsUploading(false);
     }
