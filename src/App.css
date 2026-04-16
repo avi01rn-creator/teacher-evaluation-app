@@ -952,8 +952,8 @@ body {
   border: 1.2mm solid #e3c28e;
   box-sizing: border-box;
   overflow: hidden;
-  font-family: "Merriweather", "Noto Serif JP", "Noto Sans JP",
-    "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", serif;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    "Meiryo", "Helvetica Neue", Arial, sans-serif;
 }
 
 .pdf-certificate-page--a5 {
@@ -1017,13 +1017,13 @@ body {
 }
 
 .pdf-school-logo {
-  height: 18mm;
+  height: 19mm;
   width: auto;
 }
 
 .pdf-school-mascot {
-  width: 12mm;
-  height: 12mm;
+  width: 13.5mm;
+  height: 13.5mm;
   object-fit: contain;
 }
 
@@ -1033,11 +1033,12 @@ body {
 }
 
 .pdf-meta-chip {
-  background: #fffdf9;
-  border: 0.35mm solid #e6d4b7;
+  background: linear-gradient(180deg, #fffefb, #fff9f1);
+  border: 0.35mm solid #e2cba5;
   border-radius: 999px;
   padding: 1.6mm 3mm;
-  font-size: 10.5px;
+  font-size: 10px;
+  font-weight: 600;
   color: #5d5362;
 }
 
@@ -1068,6 +1069,7 @@ body {
   box-shadow:
     inset 0 0.3mm 0 rgba(255, 255, 255, 0.55),
     0 1.2mm 3mm rgba(186, 128, 110, 0.16);
+  border: 0.28mm solid rgba(236, 214, 178, 0.55);
 }
 
 .pdf-header-label {
@@ -1084,7 +1086,8 @@ body {
 .pdf-radar-card,
 .pdf-message-box,
 .pdf-rubric-card {
-  background: rgba(255, 255, 255, 0.96);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 249, 241, 0.96));
   border: 0.45mm solid #ecd8b9;
   border-radius: 5mm;
   box-sizing: border-box;
@@ -1097,6 +1100,33 @@ body {
   flex: 1;
   padding: 4mm 4.2mm 2.6mm;
   border-top: 0.9mm solid #f1c7d0;
+  position: relative;
+}
+
+.pdf-radar-card::before,
+.pdf-message-box::before,
+.pdf-rubric-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 0.22mm rgba(255, 255, 255, 0.64);
+}
+
+.pdf-radar-card::after,
+.pdf-rubric-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(231, 125, 151, 0.06),
+    rgba(231, 185, 96, 0.05),
+    rgba(136, 206, 223, 0.04)
+  );
 }
 
 .pdf-radar-legend {
@@ -1145,11 +1175,12 @@ body {
 .pdf-message-box {
   min-height: 28mm;
   padding: 3mm 3.4mm;
-  font-size: 10.8px;
-  line-height: 1.55;
-  color: #5f5663;
+  font-size: 10.6px;
+  line-height: 1.58;
+  color: #5a5160;
   white-space: pre-line;
   border-top: 0.9mm solid #f0c6c9;
+  position: relative;
 }
 
 .pdf-rubric-grid {
@@ -1165,23 +1196,24 @@ body {
   gap: 2.2mm;
   padding: 2.8mm 3mm;
   border-top: 0.9mm solid #f1c4cb;
+  position: relative;
 }
 
 .pdf-rubric-title {
   text-align: center;
-  font-size: 10.6px;
+  font-size: 10.2px;
   font-weight: 700;
   color: #3b3140;
 }
 
 .pdf-rubric-body {
   border-radius: 3.5mm;
-  background: #fffdf9;
+  background: linear-gradient(180deg, #fffefb, #fffaf4);
   border: 0.28mm solid #efe1c8;
   padding: 2mm 2.4mm;
-  font-size: 9.6px;
-  line-height: 1.45;
-  color: #625868;
+  font-size: 9.2px;
+  line-height: 1.52;
+  color: #5e5563;
 }
 
 .pdf-rating-dots {
@@ -1191,6 +1223,8 @@ body {
 }
 
 .pdf-rating-dot {
+  position: relative;
+  overflow: hidden;
   width: 7mm;
   height: 7mm;
   border-radius: 999px;
@@ -1200,7 +1234,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 9.5px;
+  font-size: 9.2px;
   font-weight: 700;
   box-sizing: border-box;
 }
@@ -1209,10 +1243,30 @@ body {
   border-color: #ddaf42;
   background: #f8c847;
   color: #ffffff;
+  box-shadow:
+    inset 0 0.25mm 0 rgba(255, 255, 255, 0.44),
+    0 0.6mm 1.4mm rgba(217, 166, 65, 0.24);
+}
+
+.pdf-rating-mascot {
+  position: absolute;
+  width: 132%;
+  height: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0.38;
+  z-index: 0;
+  mix-blend-mode: multiply;
+}
+
+.pdf-rating-number {
+  position: relative;
+  z-index: 1;
 }
 
 .pdf-certificate-page .radar-svg {
-  max-width: 78mm;
+  max-width: 82mm;
   overflow: visible;
 }
 
@@ -1232,7 +1286,9 @@ body {
 
 .pdf-certificate-page .radar-svg text {
   fill: #4b4250;
-  font-size: 12px;
+  font-size: 13px;
+  font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic",
+    "Meiryo", "Helvetica Neue", Arial, sans-serif;
 }
 
 .mascot-watermark {

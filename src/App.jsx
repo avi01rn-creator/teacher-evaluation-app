@@ -304,10 +304,12 @@ const RadarChart = ({ values, labels }) => {
         const angle = (Math.PI * 2 * idx) / axisCount - Math.PI / 2;
         const xRaw = center + Math.cos(angle) * (size / 2 - padding + 22);
         const yRaw = center + Math.sin(angle) * (size / 2 - padding + 22);
-        const x = clamp(xRaw, 14, size - 14);
-        const y = clamp(yRaw, 14, size - 14);
-        const anchor = x < center ? "end" : "start";
-        const dy = y < center ? "-0.35em" : "1.1em";
+        const x = clamp(xRaw, 26, size - 26);
+        const y = clamp(yRaw, 20, size - 20);
+        const anchor =
+          Math.abs(xRaw - center) < 26 ? "middle" : xRaw < center ? "end" : "start";
+        const dy =
+          yRaw < center - 24 ? "-0.55em" : yRaw > center + 24 ? "1.2em" : "0.35em";
         return (
           <text
             key={label}
@@ -400,7 +402,15 @@ const PdfRatingDots = ({ score }) => (
         key={value}
         className={`pdf-rating-dot ${value === score ? "pdf-rating-dot--active" : ""}`}
       >
-        {value}
+        {value === score && (
+          <img
+            src="/mascot-head.png"
+            alt=""
+            className="pdf-rating-mascot"
+            aria-hidden="true"
+          />
+        )}
+        <span className="pdf-rating-number">{value}</span>
       </span>
     ))}
   </div>
