@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download, FolderOpen } from "lucide-react";
 import html2canvas from "html2canvas";
-import { jsPDF } from "jspdf";
 import "./App.css";
 
 /* =======================
@@ -21,6 +20,35 @@ const GOOGLE_CONFIGURED =
   GOOGLE_DRIVE_FOLDER_ID &&
   !GOOGLE_CLIENT_ID.includes("PASTE_YOUR") &&
   !GOOGLE_DRIVE_FOLDER_ID.includes("PASTE_YOUR");
+const EXPORT_TEMPLATE_BACKGROUND = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+  <svg xmlns="http://www.w3.org/2000/svg" width="1123" height="794" viewBox="0 0 1123 794">
+    <defs>
+      <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fff7f8"/>
+        <stop offset="48%" stop-color="#fffaf6"/>
+        <stop offset="100%" stop-color="#fff5ea"/>
+      </linearGradient>
+      <radialGradient id="warm" cx="12%" cy="10%" r="28%">
+        <stop offset="0%" stop-color="rgba(255,213,178,0.42)"/>
+        <stop offset="100%" stop-color="rgba(255,213,178,0)"/>
+      </radialGradient>
+      <radialGradient id="rose" cx="88%" cy="12%" r="28%">
+        <stop offset="0%" stop-color="rgba(244,193,214,0.28)"/>
+        <stop offset="100%" stop-color="rgba(244,193,214,0)"/>
+      </radialGradient>
+      <radialGradient id="sky" cx="82%" cy="78%" r="24%">
+        <stop offset="0%" stop-color="rgba(176,220,233,0.18)"/>
+        <stop offset="100%" stop-color="rgba(176,220,233,0)"/>
+      </radialGradient>
+    </defs>
+    <rect width="1123" height="794" rx="26" fill="url(#bg)"/>
+    <rect x="14" y="14" width="1095" height="766" rx="22" fill="none" stroke="rgba(231,196,145,0.95)" stroke-width="2"/>
+    <rect x="3" y="3" width="1117" height="788" rx="24" fill="none" stroke="rgba(227,194,142,0.92)" stroke-width="3"/>
+    <rect width="1123" height="794" rx="26" fill="url(#warm)"/>
+    <rect width="1123" height="794" rx="26" fill="url(#rose)"/>
+    <rect width="1123" height="794" rx="26" fill="url(#sky)"/>
+  </svg>
+`)}`;
 const FALLBACK_RUBRIC_HEADINGS = [
   "Confidence & Clarity (自信と明快な発声)",
   "Natural Fluency (自然な流暢さ)",
@@ -212,6 +240,25 @@ const applyPdfSafeInlineStyles = (sourceRoot, clonedRoot) => {
     clonedEl.style.webkitBackdropFilter = "none";
     clonedEl.style.filter = "none";
   });
+};
+
+const waitForImages = async (root) => {
+  const images = Array.from(root.querySelectorAll("img"));
+  await Promise.all(
+    images.map(
+      (img) =>
+        new Promise((resolve) => {
+          if (img.complete && img.naturalWidth > 0) {
+            resolve();
+            return;
+          }
+
+          const finish = () => resolve();
+          img.addEventListener("load", finish, { once: true });
+          img.addEventListener("error", finish, { once: true });
+        })
+    )
+  );
 };
 
 const buildSanitizedStylesheetText = () => {
@@ -649,17 +696,21 @@ export default function App() {
     });
 
   const buildCertificateImageBlob = async () => {
-    if (!certificateRef.current) {
-      throw new Error("Certificate preview is not ready yet.");
+    if (!pdfCertificateRef.current) {
+      throw new Error("Certificate export layout is not ready yet.");
     }
 
-    const sourceCertificate = certificateRef.current;
-    const exportScale = isIOSDevice() ? 3 : 4;
+    const sourceCertificate = pdfCertificateRef.current;
+
+    if (document.fonts?.ready) {
+      await document.fonts.ready;
+    }
+    await waitForImages(sourceCertificate);
 
     const canvas = await html2canvas(sourceCertificate, {
-      scale: exportScale,
+      scale: 4,
       useCORS: true,
-      backgroundColor: "#ffffff",
+      backgroundColor: null,
       logging: false,
       onclone: (clonedDocument) => {
         const sanitizedStyles = buildSanitizedStylesheetText();
@@ -684,7 +735,7 @@ export default function App() {
           clonedDocument.head.appendChild(mergedStyleTag);
         }
 
-        const clonedCertificate = clonedDocument.getElementById("certificate");
+        const clonedCertificate = clonedDocument.getElementById("certificate-pdf");
         applyPdfSafeInlineStyles(sourceCertificate, clonedCertificate);
       },
     });
@@ -1279,9 +1330,17 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
             className={`pdf-certificate-page ${printSize === "A5" ? "pdf-certificate-page--a5" : "pdf-certificate-page--a4"}`}
           >
             <img
+              className="pdf-template-background"
+              src={EXPORT_TEMPLATE_BACKGROUND}
+              alt=""
+              aria-hidden="true"
+              crossOrigin="anonymous"
+            />
+            <img
               className="pdf-mascot-watermark"
               src="/character-luca-neutral.png"
               alt=""
+              crossOrigin="anonymous"
             />
             <div className="pdf-certificate-inner">
               <div className="pdf-certificate-meta">
@@ -1290,6 +1349,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
                     src="/logo-clean2.png?v=1"
                     alt="Linglow English School"
                     className="pdf-school-logo"
+                    crossOrigin="anonymous"
                   />
                   <img
                     src="/character-luca-happy.png"

@@ -948,22 +948,18 @@ body {
   position: fixed;
   left: -10000px;
   top: 0;
-  width: 0;
-  height: 0;
-  overflow: hidden;
+  width: 1123px;
+  height: 794px;
+  overflow: visible;
   pointer-events: none;
 }
 
 .pdf-certificate-page {
-  width: 297mm;
-  height: 210mm;
+  width: 1123px;
+  height: 794px;
   position: relative;
-  background:
-    radial-gradient(circle at 12% 10%, rgba(255, 213, 178, 0.28), transparent 26%),
-    radial-gradient(circle at 88% 12%, rgba(244, 193, 214, 0.2), transparent 24%),
-    linear-gradient(135deg, #fff7f8 0%, #fffaf6 48%, #fff5ea 100%);
+  background: transparent;
   color: #312734;
-  border: 1.2mm solid #e3c28e;
   box-sizing: border-box;
   overflow: hidden;
   font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Yu Gothic",
@@ -971,29 +967,8 @@ body {
 }
 
 .pdf-certificate-page--a5 {
-  width: 210mm;
-  height: 148mm;
-}
-
-.pdf-certificate-page::before {
-  content: "";
-  position: absolute;
-  inset: 3mm;
-  border: 0.35mm solid rgba(231, 196, 145, 0.9);
-  border-radius: 4.5mm;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.pdf-certificate-page::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 82% 78%, rgba(176, 220, 233, 0.12), transparent 30%),
-    radial-gradient(circle at 22% 76%, rgba(247, 194, 188, 0.08), transparent 26%);
-  pointer-events: none;
-  z-index: 0;
+  width: 1123px;
+  height: 794px;
 }
 
 .pdf-certificate-inner {
@@ -1005,6 +980,16 @@ body {
   height: 100%;
   padding: 6mm;
   box-sizing: border-box;
+}
+
+.pdf-template-background {
+  position: absolute;
+  inset: 0;
+  width: 1123px;
+  height: 794px;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .pdf-mascot-watermark {
