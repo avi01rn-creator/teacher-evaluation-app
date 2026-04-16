@@ -211,6 +211,28 @@ const applyPdfSafeInlineStyles = (sourceRoot, clonedRoot) => {
   });
 };
 
+const buildSanitizedStylesheetText = () => {
+  const cssChunks = [];
+
+  Array.from(document.styleSheets).forEach((styleSheet) => {
+    try {
+      const rules = Array.from(styleSheet.cssRules || []);
+      if (!rules.length) return;
+      cssChunks.push(
+        sanitizeCssForPdf(
+          rules
+            .map((rule) => rule.cssText)
+            .join("\n")
+        )
+      );
+    } catch {
+      // Ignore cross-origin or unreadable stylesheets.
+    }
+  });
+
+  return cssChunks.join("\n");
+};
+
 const isIOSDevice = () => {
   if (typeof window === "undefined") return false;
   const userAgent = window.navigator.userAgent || "";
@@ -613,6 +635,12 @@ export default function App() {
       backgroundColor: "#ffffff",
       logging: false,
       onclone: (clonedDocument) => {
+        const sanitizedStyles = buildSanitizedStylesheetText();
+
+        clonedDocument.querySelectorAll('link[rel="stylesheet"]').forEach((linkTag) => {
+          linkTag.remove();
+        });
+
         clonedDocument.querySelectorAll("style").forEach((styleTag) => {
           if (
             styleTag.textContent?.includes("oklch") ||
@@ -622,6 +650,12 @@ export default function App() {
             styleTag.textContent = sanitizeCssForPdf(styleTag.textContent);
           }
         });
+
+        if (sanitizedStyles) {
+          const mergedStyleTag = clonedDocument.createElement("style");
+          mergedStyleTag.textContent = sanitizedStyles;
+          clonedDocument.head.appendChild(mergedStyleTag);
+        }
 
         const clonedCertificate = clonedDocument.getElementById("certificate");
         applyPdfSafeInlineStyles(sourceCertificate, clonedCertificate);
