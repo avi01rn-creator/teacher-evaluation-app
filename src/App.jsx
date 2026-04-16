@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download } from "lucide-react";
+import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download, FolderOpen } from "lucide-react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import "./App.css";
@@ -13,6 +13,9 @@ const RADAR_LABELS = ["Listening", "Reading", "Writing", "Speaking", "Attitude"]
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
 const GOOGLE_DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID || "";
 const GOOGLE_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+const GOOGLE_DRIVE_FOLDER_URL = GOOGLE_DRIVE_FOLDER_ID
+  ? `https://drive.google.com/drive/folders/${GOOGLE_DRIVE_FOLDER_ID}`
+  : "";
 const GOOGLE_CONFIGURED =
   GOOGLE_CLIENT_ID &&
   GOOGLE_DRIVE_FOLDER_ID &&
@@ -829,6 +832,15 @@ export default function App() {
     setUploadStatus("Google Drive connection cleared on this device.");
   };
 
+  const handleOpenSavedFiles = () => {
+    if (!GOOGLE_DRIVE_FOLDER_URL) {
+      setUploadStatus("Google Drive folder is not configured yet.");
+      return;
+    }
+
+    window.open(GOOGLE_DRIVE_FOLDER_URL, "_blank", "noopener,noreferrer");
+  };
+
   const handleManualDriveUpload = async () => {
     try {
       await uploadCertificateToDrive();
@@ -1356,12 +1368,23 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
               />
             </div>
           </div>
-          <button
-            onClick={resetForm}
-            className="reset-button"
-          >
-            <RotateCcw size={18} />
-          </button>
+          <div className="topbar-actions">
+            <button
+              type="button"
+              onClick={handleOpenSavedFiles}
+              className="action-button action-button--secondary topbar-manager-button"
+              disabled={!GOOGLE_DRIVE_FOLDER_ID}
+            >
+              <FolderOpen size={16} />
+              View Saved Files
+            </button>
+            <button
+              onClick={resetForm}
+              className="reset-button"
+            >
+              <RotateCcw size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="h-1 bg-white/40">
