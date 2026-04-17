@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download, FolderOpen } from "lucide-react";
+import { RotateCcw, GraduationCap, Printer, ArrowLeft, CloudUpload, LogIn, LogOut, Download, FolderOpen, BriefcaseBusiness, ShieldCheck } from "lucide-react";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import "./App.css";
@@ -10,9 +10,19 @@ import "./App.css";
 
 const CERT_BOX_COUNT = 6;
 const RADAR_LABELS = ["Listening", "Reading", "Writing", "Speaking", "Attitude"];
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "";
-const GOOGLE_DRIVE_FOLDER_ID = import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID || "";
+const PUBLIC_GOOGLE_CONFIG = {
+  clientId:
+    "275262601989-oih2lqfh9droijqob2bkdnbbn6q5aqfp.apps.googleusercontent.com",
+  driveFolderId: "1eXKxWUTNcs55RjEbcS8TGXc6DY3QaoYK",
+};
+const GOOGLE_CLIENT_ID =
+  import.meta.env.VITE_GOOGLE_CLIENT_ID || PUBLIC_GOOGLE_CONFIG.clientId;
+const GOOGLE_DRIVE_FOLDER_ID =
+  import.meta.env.VITE_GOOGLE_DRIVE_FOLDER_ID ||
+  PUBLIC_GOOGLE_CONFIG.driveFolderId;
 const GOOGLE_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
+const DRIVE_SESSION_KEY = "linglow_drive_session";
+const DRIVE_SESSION_MAX_AGE_MS = 1000 * 60 * 60 * 4;
 const GOOGLE_DRIVE_FOLDER_URL = GOOGLE_DRIVE_FOLDER_ID
   ? `https://drive.google.com/drive/folders/${GOOGLE_DRIVE_FOLDER_ID}`
   : "";
@@ -115,6 +125,11 @@ const truncateLabel = (label, max = 14) =>
   label.length > max ? `${label.slice(0, max)}…` : label;
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const slugifyFilePart = (value, fallback = "item") =>
+  (value || fallback)
+    .trim()
+    .replace(/[^\p{L}\p{N}._-]+/gu, "_")
+    .replace(/^_+|_+$/g, "") || fallback;
 
 const getLevelRubricHeadings = (levelValue) =>
   (LEVEL_CATEGORY_MAP[levelValue] || FALLBACK_RUBRIC_HEADINGS).slice(
@@ -495,13 +510,42 @@ export default function App() {
   const [isUploading, setIsUploading] = useState(false);
   const [pendingAutoUpload, setPendingAutoUpload] = useState(false);
   const [managerView, setManagerView] = useState(false);
+  const [workspaceMode, setWorkspaceMode] = useState(
+    () => (new URLSearchParams(window.location.search).get("savedEvaluation") ? "manager" : null)
+  );
   const [savedEvaluations, setSavedEvaluations] = useState([]);
   const [isLoadingSaved, setIsLoadingSaved] = useState(false);
+  const [savedEvaluationId] = useState(
+    () => new URLSearchParams(window.location.search).get("savedEvaluation") || ""
+  );
+  const [isOpeningSavedEvaluation, setIsOpeningSavedEvaluation] = useState(false);
   const certificateRef = useRef(null);
   const pdfCertificateRef = useRef(null);
   const tokenClientRef = useRef(null);
   const lastAutoUploadKeyRef = useRef("");
+  const certificateOriginRef = useRef("teacher");
   const levelRubricHeadings = getLevelRubricHeadings(Number(level));
+
+  useEffect(() => {
+    const storedSession = window.sessionStorage.getItem(DRIVE_SESSION_KEY);
+    if (!storedSession) return;
+
+    try {
+      const parsed = JSON.parse(storedSession);
+      if (
+        parsed?.token &&
+        parsed?.savedAt &&
+        Date.now() - Number(parsed.savedAt) < DRIVE_SESSION_MAX_AGE_MS
+      ) {
+        setDriveAccessToken(parsed.token);
+        setDriveUserEmail(parsed.email || "");
+      } else {
+        window.sessionStorage.removeItem(DRIVE_SESSION_KEY);
+      }
+    } catch {
+      window.sessionStorage.removeItem(DRIVE_SESSION_KEY);
+    }
+  }, []);
 
   useEffect(() => {
     const updateScale = () => {
@@ -553,8 +597,16 @@ export default function App() {
               );
               const profileData = await profileResponse.json();
               setDriveUserEmail(profileData.email || "");
+              window.sessionStorage.setItem(
+                DRIVE_SESSION_KEY,
+                JSON.stringify({ token, email: profileData.email || "", savedAt: Date.now() })
+              );
             } catch {
               setDriveUserEmail("");
+              window.sessionStorage.setItem(
+                DRIVE_SESSION_KEY,
+                JSON.stringify({ token, email: "", savedAt: Date.now() })
+              );
             }
           },
         });
@@ -576,11 +628,11 @@ export default function App() {
     if (!GOOGLE_CONFIGURED || !googleReady || driveAccessToken) return;
 
     const timer = window.setTimeout(() => {
-      handleGoogleConnect(true);
+      handleGoogleConnect(Boolean(savedEvaluationId) ? false : true);
     }, 500);
 
     return () => window.clearTimeout(timer);
-  }, [googleReady, driveAccessToken]);
+  }, [googleReady, driveAccessToken, savedEvaluationId]);
 
   useEffect(() => {
     if (!pendingAutoUpload || !showCertificate || !certificateData || !driveAccessToken) {
@@ -661,7 +713,7 @@ export default function App() {
   const ensureGoogleAccess = (prompt = "consent") =>
     new Promise((resolve, reject) => {
       if (!GOOGLE_CLIENT_ID) {
-        reject(new Error("Missing VITE_GOOGLE_CLIENT_ID."));
+        reject(new Error("Google sign-in is not configured."));
         return;
       }
 
@@ -689,8 +741,16 @@ export default function App() {
           );
           const profileData = await profileResponse.json();
           setDriveUserEmail(profileData.email || "");
+          window.sessionStorage.setItem(
+            DRIVE_SESSION_KEY,
+            JSON.stringify({ token, email: profileData.email || "", savedAt: Date.now() })
+          );
         } catch {
           setDriveUserEmail("");
+          window.sessionStorage.setItem(
+            DRIVE_SESSION_KEY,
+            JSON.stringify({ token, email: "", savedAt: Date.now() })
+          );
         }
 
         resolve(token);
@@ -857,6 +917,12 @@ export default function App() {
     certificateDate: record.certificateDate || todayIso,
   });
 
+  const formatSavedEvaluationTitle = (file) => {
+    const fileName = (file.name || "").replace(/\.json$/i, "");
+    const normalized = fileName.replace(/_+/g, " ").trim();
+    return normalized || file.name || "Saved evaluation";
+  };
+
   const loadSavedEvaluations = async (silent = false) => {
     try {
       setIsLoadingSaved(true);
@@ -900,8 +966,10 @@ export default function App() {
     }
   };
 
-  const openSavedEvaluation = async (fileId) => {
+  const openSavedEvaluation = async (fileId, options = {}) => {
+    const { silent = false } = options;
     try {
+      setIsOpeningSavedEvaluation(true);
       const token = driveAccessToken || (await ensureGoogleAccess(""));
       const response = await fetch(
         `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`,
@@ -928,12 +996,17 @@ export default function App() {
       }
 
       const record = await response.json();
+      certificateOriginRef.current = "manager";
       setCertificateData(buildCertificateDataFromRecord(record));
       setShowCertificate(true);
       setManagerView(false);
-      setUploadStatus(`Loaded saved evaluation for ${record.studentName || "student"}.`);
+      if (!silent) {
+        setUploadStatus(`Loaded saved evaluation for ${record.studentName || "student"}.`);
+      }
     } catch (error) {
       setUploadStatus(error.message || "Failed to open the saved evaluation.");
+    } finally {
+      setIsOpeningSavedEvaluation(false);
     }
   };
 
@@ -943,7 +1016,7 @@ export default function App() {
     }
 
     if (!GOOGLE_DRIVE_FOLDER_ID) {
-      throw new Error("Missing VITE_GOOGLE_DRIVE_FOLDER_ID.");
+      throw new Error("Google Drive folder is not configured.");
     }
 
     const token = driveAccessToken || (await ensureGoogleAccess(""));
@@ -952,10 +1025,12 @@ export default function App() {
     const recordBlob = new Blob([JSON.stringify(record, null, 2)], {
       type: "application/json",
     });
-    const safeStudentName = (data.studentName || "student").replace(/[^\w.-]+/g, "_");
-    const safeDate = (data.certificateDate || todayIso).replace(/[^\d-]+/g, "-");
-    const imageFileName = `${safeStudentName}_Lv${data.level}_${safeDate}.png`;
-    const recordFileName = `${safeStudentName}_Lv${data.level}_${safeDate}.json`;
+    const safeStudentName = slugifyFilePart(data.studentName, "student");
+    const safeTeacherName = slugifyFilePart(data.teacherName, "teacher");
+    const safeDate = slugifyFilePart(data.certificateDate || todayIso, todayIso);
+    const baseFileName = `${safeStudentName}_${safeTeacherName}_Lv${data.level}_${safeDate}`;
+    const imageFileName = `${baseFileName}.png`;
+    const recordFileName = `${baseFileName}.json`;
 
     setIsUploading(true);
     setUploadStatus("Saving evaluation record to Google Drive...");
@@ -988,7 +1063,7 @@ export default function App() {
   const handleGoogleConnect = async (silent = false) => {
     try {
       if (!GOOGLE_CONFIGURED) {
-        setUploadStatus("Google Drive is not configured. Add VITE_GOOGLE_CLIENT_ID in .env.local and restart the app.");
+        setUploadStatus("Google Drive is not configured for this app yet.");
         return;
       }
 
@@ -1014,6 +1089,7 @@ export default function App() {
     setDriveAccessToken("");
     setDriveUserEmail("");
     setUploadStatus("Google Drive connection cleared on this device.");
+    window.sessionStorage.removeItem(DRIVE_SESSION_KEY);
   };
 
   const handleOpenSavedFiles = () => {
@@ -1021,6 +1097,7 @@ export default function App() {
       setUploadStatus("Google Drive folder is not configured yet.");
       return;
     }
+    setWorkspaceMode("manager");
     setManagerView(true);
     loadSavedEvaluations();
   };
@@ -1207,6 +1284,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
         certificateDate,
       });
 
+      certificateOriginRef.current = "teacher";
       setShowCertificate(true);
       setSubmittedStudent(cleanName);
       setPendingAutoUpload(Boolean(driveAccessToken && GOOGLE_DRIVE_FOLDER_ID));
@@ -1230,7 +1308,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
       setShowCertificate(false);
       setCertificateData(null);
       setPendingAutoUpload(false);
-      setManagerView(false);
+      setManagerView(workspaceMode === "manager");
       setUploadStatus("");
       lastAutoUploadKeyRef.current = "";
     }
@@ -1263,16 +1341,139 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
     return [listening, reading, writing, speaking, attitude];
   }, [certificateData]);
 
+  useEffect(() => {
+    if (!savedEvaluationId || !googleReady || !driveAccessToken || showCertificate) return;
+
+    openSavedEvaluation(savedEvaluationId, { silent: true });
+  }, [savedEvaluationId, googleReady, driveAccessToken, showCertificate]);
+
+  if (savedEvaluationId && !showCertificate) {
+    return (
+      <div className="app-shell evaluation-screen min-h-screen">
+        <div className="sticky top-0 z-20 app-topbar">
+          <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div className="app-brand-logo-wrap">
+              <img
+                src="/logo-clean2.png?v=1"
+                alt="Linglow English School"
+                className="app-brand-logo"
+              />
+            </div>
+          </div>
+        </div>
+
+        <main className="max-w-3xl mx-auto p-6">
+          <section className="content-panel content-panel--board space-y-3">
+            <h2 className="text-base font-bold">Preparing Saved Certificate</h2>
+            <p className="text-sm text-slate-500">
+              {!driveAccessToken
+                ? "Connect Google Drive in this tab to open the saved evaluation."
+                : isOpeningSavedEvaluation
+                ? "Loading the saved evaluation and opening the print-ready certificate preview."
+                : uploadStatus || "Please wait while the saved evaluation is opened."}
+            </p>
+            {!driveAccessToken && googleReady && (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={() => handleGoogleConnect(false)}
+                  className="action-button action-button--primary px-4 py-2 rounded-lg"
+                >
+                  Connect Drive To Open Certificate
+                </button>
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
+    );
+  }
+
+  if (!workspaceMode) {
+    return (
+      <div className="app-shell evaluation-screen min-h-screen">
+        <div className="sticky top-0 z-20 app-topbar">
+          <div className="max-w-6xl mx-auto px-4 py-5 flex justify-center">
+            <div className="app-brand-logo-wrap">
+              <img
+                src="/logo-clean2.png?v=1"
+                alt="Linglow English School"
+                className="app-brand-logo app-brand-logo--landing"
+              />
+            </div>
+          </div>
+        </div>
+
+        <main className="max-w-6xl mx-auto px-4 py-10">
+          <section className="landing-hero">
+            <div className="landing-hero__copy">
+              <div className="landing-hero__eyebrow">Linglow Evaluation Studio</div>
+              <h1 className="landing-hero__title">Choose your workspace</h1>
+              <p className="landing-hero__text">
+                Start in the teacher panel to complete a new evaluation, or open the manager panel to review saved records and print certificates from a school PC.
+              </p>
+            </div>
+            <div className="landing-hero__mascots" aria-hidden="true">
+              <img src="/character-boy.png" alt="" className="landing-hero__mascot landing-hero__mascot--boy" />
+              <img src="/character-luca-happy.png" alt="" className="landing-hero__mascot landing-hero__mascot--luca" />
+              <img src="/character-girl.png" alt="" className="landing-hero__mascot landing-hero__mascot--girl" />
+            </div>
+          </section>
+
+          <section className="landing-grid">
+            <button
+              type="button"
+              onClick={() => {
+                setWorkspaceMode("teacher");
+                setManagerView(false);
+              }}
+              className="landing-card landing-card--teacher"
+            >
+              <div className="landing-card__icon">
+                <BriefcaseBusiness size={30} />
+              </div>
+              <div className="landing-card__content">
+                <h2 className="landing-card__title">Teacher Panel</h2>
+                <p className="landing-card__text">
+                  Enter student details, score the evaluation, and generate a certificate that saves automatically for the manager.
+                </p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleOpenSavedFiles()}
+              className="landing-card landing-card--manager"
+            >
+              <div className="landing-card__icon">
+                <ShieldCheck size={30} />
+              </div>
+              <div className="landing-card__content">
+                <h2 className="landing-card__title">Manager Panel</h2>
+                <p className="landing-card__text">
+                  Review saved evaluations, open certificates, and print polished records directly from the school PC.
+                </p>
+              </div>
+            </button>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   if (showCertificate && certificateData) {
     return (
       <div className="app-shell certificate-screen min-h-screen">
         <div className="no-print max-w-6xl mx-auto px-4 py-6 flex flex-wrap gap-3">
           <button
-            onClick={() => setShowCertificate(false)}
+            onClick={() => {
+              setShowCertificate(false);
+              setManagerView(certificateOriginRef.current === "manager");
+            }}
             className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <ArrowLeft size={16} />
-            Back to Evaluation
+            {certificateOriginRef.current === "manager" ? "Back to Manager Panel" : "Back to Evaluation"}
           </button>
           <button
             onClick={() => window.print()}
@@ -1280,14 +1481,6 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
           >
             <Printer size={16} />
             Print Certificate
-          </button>
-          <button
-            type="button"
-            onClick={handleDownloadPdf}
-            className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
-          >
-            <Download size={16} />
-            Download Image
           </button>
           <div className="print-size-switch" role="group" aria-label="Print size">
             {["A4", "A5"].map((size) => (
@@ -1300,54 +1493,6 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
                 {size}
               </button>
             ))}
-          </div>
-          <div className="drive-toolbar">
-            {driveAccessToken ? (
-              <>
-                <button
-                  type="button"
-                  onClick={handleManualDriveUpload}
-                  disabled={isUploading}
-                  className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <CloudUpload size={16} />
-                  {isUploading ? "Uploading..." : "Save To Drive"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleGoogleDisconnect}
-                  className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <LogOut size={16} />
-                  Disconnect Drive
-                </button>
-              </>
-            ) : (
-              <button
-                type="button"
-                onClick={handleGoogleConnect}
-                disabled={!googleReady || !GOOGLE_CLIENT_ID}
-                className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
-              >
-                <LogIn size={16} />
-                Connect Drive
-              </button>
-            )}
-          </div>
-        </div>
-
-        {(uploadStatus || driveUserEmail) && (
-          <div className="no-print max-w-6xl mx-auto px-4 pb-2">
-            <div className="drive-status-banner">
-              <span>{uploadStatus || "Google Drive is connected."}</span>
-              {driveUserEmail && <strong>{driveUserEmail}</strong>}
-            </div>
-          </div>
-        )}
-
-        <div className="no-print max-w-6xl mx-auto px-4 pb-4">
-          <div className="drive-status-pill">
-            For iPad use, please download the image first and then print the saved file for the most reliable colors, watermark, and text.
           </div>
         </div>
 
@@ -1565,12 +1710,13 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
           <div className="topbar-actions">
             <button
               type="button"
-              onClick={handleOpenSavedFiles}
+              onClick={() => {
+                setWorkspaceMode(null);
+                setManagerView(false);
+              }}
               className="action-button action-button--secondary topbar-manager-button"
-              disabled={!GOOGLE_DRIVE_FOLDER_ID}
             >
-              <FolderOpen size={16} />
-              View Saved Files
+              Change Panel
             </button>
             <button
               onClick={resetForm}
@@ -1631,7 +1777,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
                 savedEvaluations.map((file) => (
                   <div key={file.id} className="saved-evaluation-card">
                     <div>
-                      <div className="saved-evaluation-card__title">{file.name}</div>
+                      <div className="saved-evaluation-card__title">{formatSavedEvaluationTitle(file)}</div>
                       <div className="saved-evaluation-card__meta">
                         Updated {file.modifiedTime ? new Date(file.modifiedTime).toLocaleString() : "—"}
                       </div>
@@ -1639,9 +1785,16 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
                     <button
                       type="button"
                       onClick={() => openSavedEvaluation(file.id)}
-                      className="action-button action-button--primary px-4 py-2 rounded-lg"
+                      className="action-button action-button--primary px-4 py-2 rounded-lg saved-evaluation-card__action"
                     >
-                      Open & Print
+                      <img
+                        src="/character-luca-happy.png"
+                        alt=""
+                        className="saved-evaluation-card__action-mascot"
+                        aria-hidden="true"
+                      />
+                      <Printer size={16} />
+                      <span>Open & Print</span>
                     </button>
                   </div>
                 ))
@@ -1654,16 +1807,20 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
           </section>
         )}
 
+        {!managerView && (
         <section className="hero-panel">
           <div className="hero-panel__content">
             <h2 className="hero-title">Teacher Evaluation Section</h2>
-            <p className="hero-copy hero-copy--compact">Score each rubric clearly and generate the certificate when ready.</p>
+            <p className="hero-copy hero-copy--compact">Complete the evaluation and generate the certificate. The record will save automatically for the manager panel.</p>
           </div>
           <div className="hero-panel__mascot" aria-hidden="true">
             <img src="/character-luca-happy.png" alt="" className="hero-panel__mascot-image" />
           </div>
         </section>
+        )}
 
+        {!managerView && (
+        <>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <input
             type="text"
@@ -1796,54 +1953,11 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
             </div>
           </div>
         </section>
-
-        <section className="space-y-3 content-panel content-panel--soft">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
-            <div>
-              <h2 className="text-base font-bold">Google Drive</h2>
-              <div className="text-sm text-slate-500">
-                Connect the school Google account once to auto-save certificates after generation.
-              </div>
-            </div>
-            {driveAccessToken ? (
-              <div className="drive-inline-actions">
-                <div className="drive-status-pill">
-                  Connected{driveUserEmail ? `: ${driveUserEmail}` : ""}
-                </div>
-                <button
-                  type="button"
-                  onClick={handleGoogleDisconnect}
-                  className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <LogOut size={16} />
-                  Disconnect
-                </button>
-              </div>
-            ) : (
-              <button
-                type="button"
-                onClick={handleGoogleConnect}
-                disabled={!googleReady || !GOOGLE_CLIENT_ID}
-                className="action-button action-button--secondary px-4 py-2 rounded-lg flex items-center gap-2"
-              >
-                <LogIn size={16} />
-                Connect Google Drive
-              </button>
-            )}
-          </div>
-          <div className="text-sm text-slate-500">
-            {GOOGLE_CONFIGURED
-              ? uploadStatus || "Certificates will auto-upload after Generate Certificate when Google Drive is connected."
-              : "Set VITE_GOOGLE_CLIENT_ID and VITE_GOOGLE_DRIVE_FOLDER_ID to enable Drive saving."}
-          </div>
-          <div className="drive-debug">
-            <span>Client ID: {GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.includes("PASTE_YOUR") ? "configured" : "missing"}</span>
-            <span>Folder ID: {GOOGLE_DRIVE_FOLDER_ID && !GOOGLE_DRIVE_FOLDER_ID.includes("PASTE_YOUR") ? "configured" : "missing"}</span>
-            <span>Google script: {googleReady ? "ready" : "not ready"}</span>
-          </div>
-        </section>
+        </>
+        )}
       </main>
 
+      {!managerView && (
       <div className="fixed bottom-0 left-0 right-0 app-footer-bar">
         <div className="max-w-2xl mx-auto px-4 py-4 flex flex-wrap items-center gap-3 justify-between">
           <div className="text-xs text-slate-500">
@@ -1868,6 +1982,7 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 }
