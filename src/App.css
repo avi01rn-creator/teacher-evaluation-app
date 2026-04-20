@@ -2092,10 +2092,18 @@ body {
   .radar-wrap,
   .message-box,
   .rubric-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 239, 0.96));
-    border: 1px solid rgba(197, 150, 94, 0.5);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 248, 239, 0.74));
+    border: 1px solid rgba(197, 150, 94, 0.36);
     backdrop-filter: none;
     box-shadow: none;
+  }
+
+  .certificate-page::after,
+  .message-box::before,
+  .radar-wrap::before,
+  .rubric-card::before,
+  .rating-dot--mascot::after {
+    display: none !important;
   }
 
   .radar-wrap {
@@ -2134,6 +2142,7 @@ body {
     padding: 6px 7px;
     gap: 4px;
     border-radius: 14px;
+    border-top: 1px solid rgba(221, 168, 115, 0.3);
   }
 
   .rubric-title {
@@ -2161,6 +2170,8 @@ body {
     min-height: 54px;
     padding: 4px 6px;
     border-radius: 11px;
+    background: rgba(255, 252, 247, 0.68);
+    box-shadow: none;
   }
 
   .rubric-body {
