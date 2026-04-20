@@ -78,30 +78,30 @@ const LEVEL_CATEGORY_MAP = {
   27: ["表現 [Everyday Expressions]", "乗り物 [Vehicles]", "動物 [Animals]", "アルファベット [Alphabet Recognition]", "フォニックス [Single Letter Sounds]", "ライティング [Letter Writing]", "復習 [Review Skills]", "ことばのやりとり [Simple Responses]"],
   26: ["動物園の動物 [Zoo Animals]", "あいさつ [Greetings]", "形 [Shapes]", "気持ち [Feelings]", "アルファベット [Alphabet Recognition]", "フォニックス [Single Letter Sounds]", "ライティング [Letter Writing]", "ことばのやりとり [Simple Responses]"],
   25: ["体のパーツ [Body Parts]", "海の動物 [Sea Animals]", "数字 1-100 [Numbers 1-100]", "アルファベット [Alphabet Recognition]", "フォニックス [Single Letter Sounds]", "ライティング [Letter Writing]", "復習 [Review Skills]", "ことばのやりとり [Simple Responses]"],
-  24: ["あいさつ [Hello]", "自分の名前 [Name]", "フォニックスの歌 [Phonics Song]", "色 [Colors]", "乗り物 [Vehicles]", "虫 [Insects]", "フォニックス [phonics]", "ライティング [writing]"],
-  23: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 ）", "花 [Flowers]", "野菜 [Vegetables]", "おもちゃ [toys]", "Question [How many]", "Question [How much]", "フォニックス [phonics]", "ライティング [writing]"],
-  22: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 ）", "食べ物 1[Food]", "持ち物1[Belongings]", "キッチン周りの道具[Kitchen Utencils]", "食べ物2[Food]", "持ち物2[Belongings]", "フォニックス [phonics]", "ライティング [writing]"],
-  21: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 ）", "曜日 [The Days of The Week]", "反対言葉 [Opposite]", "天気 [Weather]", "衣類１ [Clothes 1]", "衣類２ [Clothes 2]", "フォニックス [phonics]", "ライティング [writing]"],
-  20: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  19: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気）", "楽器 [Musical Instruments]", "スポーツ [Sports]", "動詞1 [Verbs]", "動詞2 [Verbs]", "家族・性格 [Family/Personality]", "フォニックス [phonics]", "ライティング [writing]"],
-  18: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  17: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 ）", "体のパーツ [Body Parts]", "季節 [Seasons]", "月日 [Months,Date]", "年間行事 [Yearly Event]", "食べ物の特徴 [Adjective for food]", "フォニックス [phonics]", "ライティング [writing]"],
-  16: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  15: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気 ）", "国1 [Countries 1]", "国2 [Coutries 2]", "ランドマーク [Land mark]", "シンボル [Symbols]", "複数形 [Plural forms]", "フォニックス [phonics]", "ライティング [writing]"],
-  14: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  13: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 /誕生日）", "体のパーツ [Body Parts]", "症状[Symptons]", "動詞[Verbs]", "関連語[Related Words]", "質問[Does Questions]", "フォニックス [phonics]", "ライティング [writing]"],
-  12: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  11: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気 / 誕生日）", "動詞・質問①[Do you like to-?]", "動詞・質問②[Did you-?]", "趣味[Hobby]", "形容詞[Adjective]", "関連語・Why?[Related words/Why?]", "フォニックス [phonics]", "ライティング [writing]"],
-  10: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  9: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  8: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  7: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 /誕生日/天気/日曜日にすること）", "形容詞[adjective]", "関連語・表現[Related Words&Expressions]", "比較を表す単語[~er / more~]", "最上級（3つ以上を比べる）を表す単語[~est / most~]", "その他比較表現の入った質問[like better/as~as]", "フォニックス [phonics]", "ライティング [writing]"],
-  6: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  5: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 /誕生日/天気/日曜日にすること）", "現在形の動詞 [Present tense verb/ Do you like to-?]", "過去形の動詞 [Past tense verb/ Did you-?]", "現在完了形① [Present perfect tense/ Have you-?]", "現在完了形② [Present perfect tense/ How long have you-?]", "現在完了形③ [Present perfect tense/ How many time have you-?]", "フォニックス [phonics]", "ライティング [writing]"],
-  4: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  3: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 /誕生日/天気/日曜日にすること）", "Lv.3 単語[Lv.3 Vocabulary]", "Question 1 [if]", "Question 2 [if]", "付加疑問文[Tag question]", "間接疑問文[Indirect question]", "フォニックス [phonics]", "ライティング [writing]"],
-  2: ["声の大きさ [Voice]", "すらすら言える [Fluency]", "発音 [Pronunciation]", "暗記 [Memorization]", "内容 [Content]", "ジェスチャー [Gesture]", "顔の表情や目線 [Facial Expressions, Eyes]", "態度 [Atittude]"],
-  1: ["cat A1.1", "cat A1.2", "cat A1.3", "cat A1.4", "cat A1.5", "cat A1.6", "cat A1.7", "cat A1.8"],
+  24: ["あいさつ [Greetings]", "自分の名前 [Name]", "フォニックスの歌 [Phonics Song]", "色 [Colors]", "乗り物 [Vehicles]", "虫 [Insects]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  23: ["あいさつ [Greetings]（名前 / 年れい / 感情表現）", "花 [Flowers]", "野菜 [Vegetables]", "おもちゃ [Toys]", "質問 [How Many?]", "質問 [How Much?]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  22: ["あいさつ [Greetings]（名前 / 年れい / 感情表現）", "食べ物 1 [Food 1]", "持ち物 1 [Belongings 1]", "キッチン周りの道具 [Kitchen Utensils]", "食べ物 2 [Food 2]", "持ち物 2 [Belongings 2]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  21: ["あいさつ [Greetings]（名前 / 年れい / 感情表現）", "曜日 [Days of the Week]", "反対言葉 [Opposites]", "天気 [Weather]", "衣類 1 [Clothes 1]", "衣類 2 [Clothes 2]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  20: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気）", "体調 [How Are You Feeling?]", "好き・きらい [Likes and Dislikes]", "持ち物 [Things You Have]", "ほしいもの [Things You Want]", "暑い日の服 [Hot Weather Clothes]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  19: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気）", "楽器 [Musical Instruments]", "スポーツ [Sports]", "動詞 1 [Verbs 1]", "動詞 2 [Verbs 2]", "家族・性格 [Family and Personality]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  18: ["場所の表現 [Location Expressions]", "位置を説明する [Describing Where Things Are]", "習慣 [Daily Habits]", "いつも・ときどき [Frequency Expressions]", "自分について話す [Talking About Yourself]", "文で答える [Sentence Response]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  17: ["あいさつ [Greetings]（名前 / 年れい / 感情表現）", "体のパーツ [Body Parts]", "季節 [Seasons]", "月日 [Months and Dates]", "年間行事 [Yearly Events]", "食べ物の特徴 [Food Adjectives]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  16: ["道案内 [Giving Directions]", "将来の夢 [Future Dreams]", "誕生日にほしいもの [Birthday Wishes]", "年間行事 [Yearly Events]", "家族紹介 [Family Introduction]", "理由を添える [Giving Simple Reasons]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  15: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気）", "国 1 [Countries 1]", "国 2 [Countries 2]", "ランドマーク [Landmarks]", "シンボル [Symbols]", "複数形 [Plural Forms]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  14: ["出身 [Hometown and Origin]", "国にあるもの [Things in Your Country]", "ものの説明 [Describing Things]", "ふだんすること [Usual Actions]", "時々すること [Sometimes]", "いつもすること [Always]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  13: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 誕生日）", "体のパーツ [Body Parts]", "症状 [Symptoms]", "動詞 [Verbs]", "関連語 [Related Words]", "質問に答える [Question Response]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  12: ["過去 1 週間 [Last Week Topics]", "したこと [Things You Did]", "行った場所 [Places You Went]", "見たもの [Things You Saw]", "したかったこと [Things You Wanted To Do]", "順序立てて話す [Sequencing Ideas]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  11: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 天気 / 誕生日）", "動詞・質問 1 [Do You Like To...?]", "動詞・質問 2 [Did You...?]", "趣味 [Hobbies]", "形容詞 [Adjectives]", "関連語・Why? [Related Words and Why?]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  10: ["出身地 [Hometown]", "有名なこと [Famous Things]", "持っているもの [Things You Have]", "得意なこと [Things You Are Good At]", "日常生活 [Daily Life]", "家族の仕事 [Family Jobs]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  9: ["不定詞 [Infinitives]", "過去進行形 [Past Progressive]", "when の表現 [When Clauses]", "していたことを話す [Explaining Past Actions]", "アリバイゲーム [Alibi Game Responses]", "理由を加える [Adding Reasons]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  8: ["家族の性格 [Family Personalities]", "家族の習慣 [Family Routines]", "思い出 [Memories]", "週末の予定 [Weekend Plans]", "雨の日の予定 [Rainy Day Plans]", "しなくてはいけないこと [Obligations]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  7: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 誕生日 / 天気 / 日曜日にすること）", "形容詞 [Adjectives]", "関連語・表現 [Related Words and Expressions]", "比較 [Comparatives]", "最上級 [Superlatives]", "比較の質問 [Comparison Questions]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  6: ["したいこと [Things You Want To Do]", "行きたい場所 [Places You Want To Go]", "見たいもの [Things You Want To See]", "なりたいもの [Things You Want To Be]", "理由を言う [Giving Reasons]", "スピーチの流れ [Speech Flow]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  5: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 誕生日 / 天気 / 日曜日にすること）", "現在形の動詞 [Present Tense Verbs]", "過去形の動詞 [Past Tense Verbs]", "現在完了 1 [Have You Ever...?]", "現在完了 2 [How Long Have You...?]", "現在完了 3 [How Many Times Have You...?]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  4: ["自己紹介 [Self Introduction]", "生まれた場所 [Where You Were Born]", "今住んでいる場所 [Where You Live Now]", "好きなこと [Things You Like Doing]", "長くしていること [Things You Have Done For A Long Time]", "行ったことがある場所 [Places You Have Been]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  3: ["あいさつ [Greetings]（名前 / 年れい / 感情表現 / 誕生日 / 天気 / 日曜日にすること）", "Lv. 3 単語 [Level 3 Vocabulary]", "条件の質問 1 [If Questions 1]", "条件の質問 2 [If Questions 2]", "付加疑問文 [Tag Questions]", "間接疑問文 [Indirect Questions]", "フォニックス [Phonics Sounds]", "ライティング [Letter Writing]"],
+  2: ["自己紹介 [Extended Self Introduction]", "比較と理由 [Comparisons and Reasons]", "将来の夢 [Future Dreams]", "したいこと [Things You Want To Do]", "なりたい人物像 [The Person You Want To Be]", "もしお金持ちなら [If You Were Rich]", "フォニックス [Phonics Awareness]", "ライティング [Letter Writing]"],
+  1: ["あいさつ [Greetings]", "自分について [About Me]", "数と色 [Numbers and Colors]", "教室のことば [Classroom Words]", "フォニックス [Phonics Awareness]", "ライティング [Letter Writing]", "自信 [Confidence]", "参加の姿勢 [Participation]"],
 };
 
 /* =======================
@@ -164,6 +164,331 @@ const averageToFive = (values) => {
     1,
     Math.min(5, Math.round(validValues.reduce((sum, value) => sum + value, 0) / validValues.length))
   );
+};
+
+const pickVariant = (variants, seed = 0) =>
+  variants[Math.abs(seed) % variants.length];
+
+const buildFocusStep = (focusHeading, levelValue = 1) => {
+  const { jp, en } = parseHeadingParts(focusHeading || "");
+  const english = (en || focusHeading || "this area").toLowerCase();
+  const japanese = jp || focusHeading || "この項目";
+
+  if (english.includes("greeting")) {
+    return {
+      en:
+        levelValue <= 10
+          ? "use greetings more naturally and confidently"
+          : "make greetings feel more natural and confident",
+      jp: "あいさつをもう少し自然に、自信を持って言えるようにすること",
+    };
+  }
+  if (english.includes("phonics")) {
+    return {
+      en: "build more confidence with phonics sounds",
+      jp: "フォニックスの音をより自信を持って読めるようにすること",
+    };
+  }
+  if (english.includes("writing") || english.includes("letter")) {
+    return {
+      en: "make writing a little steadier and more confident",
+      jp: "書く力をもう少し安定させ、自信につなげること",
+    };
+  }
+  if (english.includes("question")) {
+    return {
+      en: "answer questions more smoothly and independently",
+      jp: "質問にもう少しスムーズに、自分の力で答えられるようにすること",
+    };
+  }
+  if (
+    english.includes("verb") ||
+    english.includes("present") ||
+    english.includes("past") ||
+    english.includes("perfect")
+  ) {
+    return {
+      en: "use verb patterns more accurately and consistently",
+      jp: "動詞の形をより正確に、安定して使えるようにすること",
+    };
+  }
+  if (
+    english.includes("adjective") ||
+    english.includes("comparative") ||
+    english.includes("superlative")
+  ) {
+    return {
+      en: "use comparison and describing words more naturally",
+      jp: "形容詞や比較表現をより自然に使えるようにすること",
+    };
+  }
+  if (
+    english.includes("number") ||
+    english.includes("color") ||
+    english.includes("fruit") ||
+    english.includes("animal") ||
+    english.includes("body") ||
+    english.includes("vehicle")
+  ) {
+    return {
+      en: `use ${en || focusHeading} more confidently in conversation`,
+      jp: `${japanese}を会話の中でもっと自信を持って使えるようにすること`,
+    };
+  }
+
+  return {
+    en: `make ${en || focusHeading || "this area"} feel more natural and secure`,
+    jp: `${japanese}をもう少し自然に、安定して使えるようにすること`,
+  };
+};
+
+const buildRubricTexts = (headings, scores, levelValue = 1) =>
+  scores.map((score, idx) => {
+    const heading = headings[idx] || FALLBACK_RUBRIC_HEADINGS[idx] || "Skill";
+    const { jp, en } = parseHeadingParts(heading);
+    const labelJp = jp || en;
+    const labelEn = en || jp;
+    const seed = levelValue * 17 + idx * 11 + (score || 1);
+
+    const templatesByScore = {
+      1: [
+        {
+          en: `${labelEn} is just starting to develop. With a little more guided practice, this area will become more comfortable.`,
+          jp: `${labelJp}はこれから少しずつ伸ばしていきたい項目です。くり返し練習しながら自信につなげていきましょう。`,
+        },
+        {
+          en: `${labelEn} is still emerging. Building confidence here step by step will make a big difference.`,
+          jp: `${labelJp}はまだ伸びしろの大きい部分です。小さな成功を重ねながら、少しずつ安定させていきましょう。`,
+        },
+      ],
+      2: [
+        {
+          en: `${labelEn} is beginning to settle. A little more repetition will help this skill become steadier.`,
+          jp: `${labelJp}は少しずつ形になってきています。もう少し反復できると、さらに安定していきそうです。`,
+        },
+        {
+          en: `${labelEn} showed a good start today. Continued practice will help this area feel more natural.`,
+          jp: `${labelJp}は良いスタートが見られました。引き続き練習することで、もっと自然に使えるようになりそうです。`,
+        },
+      ],
+      3: [
+        {
+          en: `${labelEn} was handled steadily today. This skill is moving in a positive direction.`,
+          jp: `${labelJp}は今日しっかり取り組めていました。着実に力がついてきています。`,
+        },
+        {
+          en: `${labelEn} was reasonably secure today. With continued exposure, this can become a stronger point.`,
+          jp: `${labelJp}は今日安定して取り組めていました。経験を重ねることで、さらに強みになっていきそうです。`,
+        },
+      ],
+      4: [
+        {
+          en: `${labelEn} was a clear strength today. The student was able to use this skill with growing independence.`,
+          jp: `${labelJp}は今日の大きな強みの一つでした。自分の力で使える場面がしっかり増えてきています。`,
+        },
+        {
+          en: `${labelEn} was very well developed today. There was clear confidence and control in this area.`,
+          jp: `${labelJp}はとても良くできていました。この項目では自信と安定感がしっかり見られました。`,
+        },
+      ],
+      5: [
+        {
+          en: `${labelEn} stood out beautifully today. This was an especially confident and polished part of the performance.`,
+          jp: `${labelJp}は今日特によく光っていました。とても自信があり、完成度の高い取り組みでした。`,
+        },
+        {
+          en: `${labelEn} was excellent today. The student used this area with confidence, accuracy, and strong presence.`,
+          jp: `${labelJp}は非常に素晴らしかったです。自信、正確さ、表現力のどれもがしっかり感じられました。`,
+        },
+      ],
+    };
+
+    const chosen = pickVariant(templatesByScore[score || 1], seed);
+    return `${chosen.en}\n${chosen.jp}`;
+  });
+
+const buildAutoMessage = ({
+  skills,
+  rubrics,
+  name,
+  levelValue,
+  totalCorrect,
+  totalQuestionCount,
+  headings,
+}) => {
+  const rubricAvg =
+    rubrics.reduce((sum, score) => sum + (score || 0), 0) / rubrics.length;
+  const accuracy = totalQuestionCount ? totalCorrect / totalQuestionCount : 0.6;
+  const lowIndex = rubrics.indexOf(Math.min(...rubrics));
+  const highIndex = rubrics.indexOf(Math.max(...rubrics));
+  const focusHeading =
+    headings?.[lowIndex] || FALLBACK_RUBRIC_HEADINGS[0];
+  const strengthHeading =
+    headings?.[highIndex] || FALLBACK_RUBRIC_HEADINGS[1];
+  const focus = parseHeadingParts(focusHeading);
+  const strength = parseHeadingParts(strengthHeading);
+  const focusStep = buildFocusStep(focusHeading, levelValue);
+  const learnerName = name ? `${name}, ` : "";
+  const learnerNameJp = name ? `${name}さん、` : "";
+  const seed = (name || "").length + levelValue + Math.round(rubricAvg * 10);
+
+  const performanceBand =
+    accuracy >= 0.84 && rubricAvg >= 4.2
+      ? "high"
+      : accuracy >= 0.64 && rubricAvg >= 3
+        ? "mid"
+        : "growth";
+
+  if (levelValue <= 10) {
+    const englishOpeners = {
+      high: [
+        `${learnerName}you brought wonderful energy to the lesson today, and ${strength.en} was especially strong.`,
+        `${learnerName}you did a bright and confident job today, especially in ${strength.en}.`,
+      ],
+      mid: [
+        `${learnerName}you worked hard today and showed nice progress throughout the lesson.`,
+        `${learnerName}you stayed engaged today and showed steady growth in your English work.`,
+      ],
+      growth: [
+        `${learnerName}you kept trying all the way through today, and that effort was lovely to see.`,
+        `${learnerName}you showed a positive attitude today and kept going even when something felt difficult.`,
+      ],
+    };
+
+    const englishClosers = [
+      `Next time, let's keep working on how to ${focusStep.en}.`,
+      `For the next step, we can focus on how to ${focusStep.en}.`,
+    ];
+
+    const japaneseOpeners = {
+      high: [
+        `${learnerNameJp}今日はとても明るく自信を持って取り組めていて、特に${strength.jp}がよくできていました。`,
+        `${learnerNameJp}今日は元気よく取り組めていて、特に${strength.jp}が光っていました。`,
+      ],
+      mid: [
+        `${learnerNameJp}今日はよく頑張っていて、しっかり成長が見られました。`,
+        `${learnerNameJp}今日は最後まで集中して取り組み、少しずつ力がついている様子が見られました。`,
+      ],
+      growth: [
+        `${learnerNameJp}今日は難しいところがあっても、あきらめずに頑張れていたのがとても良かったです。`,
+        `${learnerNameJp}今日は前向きに取り組みながら、一つずつチャレンジする姿が見られました。`,
+      ],
+    };
+
+    const japaneseClosers = [
+      `次は、${focusStep.jp}ことを意識していきましょう。`,
+      `次のレッスンでは、${focusStep.jp}ことを目標にしていきましょう。`,
+    ];
+
+    return `${pickVariant(englishOpeners[performanceBand], seed)} ${pickVariant(
+      englishClosers,
+      seed + 1
+    )}
+${pickVariant(japaneseOpeners[performanceBand], seed + 2)}${pickVariant(
+      japaneseClosers,
+      seed + 3
+    )}`;
+  }
+
+  if (levelValue <= 20) {
+    const englishOpeners = {
+      high: [
+        `${learnerName}you showed strong progress today, and ${strength.en} stood out as a clear strength.`,
+        `${learnerName}you handled the lesson very well today, with particularly strong work in ${strength.en}.`,
+      ],
+      mid: [
+        `${learnerName}you showed solid progress today and worked through the lesson with good focus.`,
+        `${learnerName}you handled today's work steadily and showed encouraging growth across the lesson.`,
+      ],
+      growth: [
+        `${learnerName}you stayed with the lesson well today and kept building your confidence step by step.`,
+        `${learnerName}you kept working carefully today, and that effort is helping your skills grow.`,
+      ],
+    };
+
+    const englishClosers = [
+      `A good next focus is how to ${focusStep.en}, so the overall performance becomes even more consistent.`,
+      `For the next step, let's work on how to ${focusStep.en}.`,
+    ];
+
+    const japaneseOpeners = {
+      high: [
+        `${learnerNameJp}今日はとても良い成長が見られ、特に${strength.jp}が印象的でした。`,
+        `${learnerNameJp}今日は全体的にしっかり取り組めていて、特に${strength.jp}がよくできていました。`,
+      ],
+      mid: [
+        `${learnerNameJp}今日は落ち着いて取り組み、着実な成長が見られました。`,
+        `${learnerNameJp}今日は最後まで安定して取り組み、しっかり力を出すことができていました。`,
+      ],
+      growth: [
+        `${learnerNameJp}今日は一つずつ丁寧に取り組みながら、少しずつ自信をつけている様子が見られました。`,
+        `${learnerNameJp}今日は粘り強く取り組み、次につながる良い土台を作ることができました。`,
+      ],
+    };
+
+    const japaneseClosers = [
+      `次のステップとして、${focusStep.jp}ことを意識していきましょう。`,
+      `これからは、${focusStep.jp}ことを通して全体の完成度を高めていきましょう。`,
+    ];
+
+    return `${pickVariant(englishOpeners[performanceBand], seed)} ${pickVariant(
+      englishClosers,
+      seed + 1
+    )}
+${pickVariant(japaneseOpeners[performanceBand], seed + 2)}${pickVariant(
+      japaneseClosers,
+      seed + 3
+    )}`;
+  }
+
+  const englishOpeners = {
+    high: [
+      `${learnerName}you gave a polished performance today, with ${strength.en} standing out in particular.`,
+      `${learnerName}you worked at a strong level today, and ${strength.en} was especially impressive.`,
+    ],
+    mid: [
+      `${learnerName}you showed thoughtful progress today and communicated with growing confidence.`,
+      `${learnerName}you handled today's lesson in a steady and mature way, showing clear development.`,
+    ],
+    growth: [
+      `${learnerName}you engaged seriously with the lesson today and laid a good foundation for the next stage.`,
+      `${learnerName}you approached the work carefully today and continued building toward greater confidence.`,
+    ],
+  };
+
+  const englishClosers = [
+    `A useful next focus will be how to ${focusStep.en}, so the overall performance feels even more natural and complete.`,
+    `The next step is to work on how to ${focusStep.en}, which will make the overall performance even more polished.`,
+  ];
+
+  const japaneseOpeners = {
+    high: [
+      `${learnerNameJp}今日は全体的に完成度の高い取り組みで、特に${strength.jp}が印象的でした。`,
+      `${learnerNameJp}今日はしっかりとした力が見られ、特に${strength.jp}が大きな強みになっていました。`,
+    ],
+    mid: [
+      `${learnerNameJp}今日はよく考えながら取り組めており、表現への自信が着実についてきています。`,
+      `${learnerNameJp}今日は安定して取り組めていて、全体として前向きな成長が見られました。`,
+    ],
+    growth: [
+      `${learnerNameJp}今日は丁寧に取り組みながら、次の段階につながる土台をしっかり作ることができました。`,
+      `${learnerNameJp}今日は一つずつ着実に取り組み、今後につながる大切な積み重ねができていました。`,
+    ],
+  };
+
+  const japaneseClosers = [
+    `次は、${focusStep.jp}ことを意識し、全体をさらに自然で完成度の高い表現にしていきましょう。`,
+    `これからは、${focusStep.jp}ことを通して、全体の表現をより自然で洗練されたものにしていきましょう。`,
+  ];
+
+  return `${pickVariant(englishOpeners[performanceBand], seed)} ${pickVariant(
+    englishClosers,
+    seed + 1
+  )}
+${pickVariant(japaneseOpeners[performanceBand], seed + 2)}${pickVariant(
+    japaneseClosers,
+    seed + 3
+  )}`;
 };
 
 const buildRadarSkillsFromRubrics = (rubrics) => {
@@ -700,7 +1025,7 @@ export default function App() {
       skills: sampleSkills,
       totalScore: sampleTotalScore,
       message: autoMessage,
-      rubricTexts: buildRubricTexts(sampleHeadings, sampleRubrics),
+      rubricTexts: buildRubricTexts(sampleHeadings, sampleRubrics, sampleLevel),
       rubricHeadings: sampleHeadings,
       rubricScores: sampleRubrics,
       teacherName: sampleTeacher,
@@ -1135,104 +1460,6 @@ export default function App() {
     }
   };
 
-  const buildRubricTexts = (headings, scores) =>
-    scores.map((score, idx) => {
-      const heading = headings[idx] || FALLBACK_RUBRIC_HEADINGS[idx] || "Skill";
-      const { jp, en } = parseHeadingParts(heading);
-      const labelJp = jp || en;
-
-      const templates = [
-        `${labelJp}はこれから練習していきましょう。少しずつ自信をつけていければ十分です。`,
-        `${labelJp}は少しずつ安定してきました。次回はもう一歩レベルアップを目指しましょう。`,
-        `${labelJp}はしっかり取り組めていました。着実に力がついています。`,
-        `${labelJp}はとても良くできていました。自分の力で表現できる場面が増えています。`,
-        `${labelJp}はとても素晴らしかったです。自信を持って使えていました。`,
-      ];
-
-      return templates[Math.max(0, Math.min(4, (score || 1) - 1))];
-    });
-
-  const buildAutoMessage = ({
-    skills,
-    rubrics,
-    name,
-    levelValue,
-    totalCorrect,
-    totalQuestionCount,
-    headings,
-  }) => {
-    const rubricAvg =
-      rubrics.reduce((sum, score) => sum + (score || 0), 0) / rubrics.length;
-    const accuracy = totalQuestionCount
-      ? totalCorrect / totalQuestionCount
-      : 0.6;
-    const lowIndex = rubrics.indexOf(Math.min(...rubrics));
-    const highIndex = rubrics.indexOf(Math.max(...rubrics));
-    const focusHeading =
-      headings?.[lowIndex] || levelRubricHeadings[lowIndex] || FALLBACK_RUBRIC_HEADINGS[0];
-    const strengthHeading =
-      headings?.[highIndex] || levelRubricHeadings[highIndex] || FALLBACK_RUBRIC_HEADINGS[1];
-    const focus = parseHeadingParts(focusHeading);
-    const strength = parseHeadingParts(strengthHeading);
-    const learnerName = name ? `${name}, ` : "";
-    const learnerNameJp = name ? `${name}さん、` : "";
-
-    if (levelValue <= 10) {
-      const enPraise =
-        accuracy >= 0.82 && rubricAvg >= 4
-          ? `you did such a bright, confident job today. Your ${strength.en} really shined.`
-          : accuracy >= 0.6
-            ? `you worked hard today and showed lovely progress.`
-            : `you kept trying today, and that was wonderful to see.`;
-      const enNext = `Next time, let's practice ${focus.en} a little more together.`;
-      const jpPraise =
-        accuracy >= 0.82 && rubricAvg >= 4
-          ? `とても明るく自信を持って取り組めました。${strength.jp}もとても良かったです。`
-          : accuracy >= 0.6
-            ? `よく頑張っていて、しっかり成長が見られました。`
-            : `最後まであきらめずに取り組めたことがとても素敵でした。`;
-      const jpNext = `次は${focus.jp}をいっしょにもう少し練習していきましょう。`;
-      return `${learnerName}${enPraise} ${enNext}
-${learnerNameJp}${jpPraise}${jpNext}`;
-    }
-
-    if (levelValue <= 20) {
-      const enPraise =
-        accuracy >= 0.8 && rubricAvg >= 4
-          ? `you showed strong progress today, especially in ${strength.en}.`
-          : accuracy >= 0.62
-            ? `you showed solid progress today and handled the lesson well.`
-            : `you stayed focused and kept building your skills today.`;
-      const enNext = `For the next step, let's strengthen ${focus.en} and make it more consistent.`;
-      const jpPraise =
-        accuracy >= 0.8 && rubricAvg >= 4
-          ? `今日はとても良い成長が見られ、特に${strength.jp}が光っていました。`
-          : accuracy >= 0.62
-            ? `今日は落ち着いて取り組み、しっかり力を出せていました。`
-            : `今日は集中して取り組み、力を積み重ねることができました。`;
-      const jpNext = `次のステップとして、${focus.jp}をさらに安定させていきましょう。`;
-      return `${learnerName}${enPraise} ${enNext}
-${learnerNameJp}${jpPraise}${jpNext}`;
-    }
-
-    const enPraise =
-      accuracy >= 0.85 && rubricAvg >= 4.1
-        ? `you delivered a polished performance today, with ${strength.en} standing out in particular.`
-        : accuracy >= 0.68
-          ? `you showed thoughtful progress today and communicated with growing confidence.`
-          : `you engaged steadily today and laid a good foundation for the next stage.`;
-    const enNext = `A good next focus is ${focus.en}, so your overall performance feels even more natural and complete.`;
-    const jpPraise =
-      accuracy >= 0.85 && rubricAvg >= 4.1
-        ? `今日は全体的に完成度の高い発表で、特に${strength.jp}が印象的でした。`
-        : accuracy >= 0.68
-          ? `今日はよく考えながら取り組めており、自信ある表現につながってきています。`
-          : `今日は安定して取り組めており、次のステップにつながる土台ができています。`;
-    const jpNext = `次は${focus.jp}を意識し、全体をさらに自然で完成度の高い表現にしていきましょう。`;
-    return `${learnerName}${enPraise} ${enNext}
-${learnerNameJp}${jpPraise}${jpNext}`;
-  };
-
   const handleSubmit = async () => {
     const cleanName = studentName.trim();
 
@@ -1260,7 +1487,11 @@ ${learnerNameJp}${jpPraise}${jpNext}`;
     };
 
     try {
-      const rubricTexts = buildRubricTexts(levelRubricHeadings, rubricScores);
+      const rubricTexts = buildRubricTexts(
+        levelRubricHeadings,
+        rubricScores,
+        payload.level
+      );
 
       const autoMessage = buildAutoMessage({
         skills: payload.skills,
