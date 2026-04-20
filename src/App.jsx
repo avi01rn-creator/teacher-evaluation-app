@@ -242,63 +242,158 @@ const buildFocusStep = (focusHeading, levelValue = 1) => {
   };
 };
 
+const detectRubricTone = (headingText) => {
+  const text = (headingText || "").toLowerCase();
+
+  if (text.includes("greeting") || text.includes("あいさつ")) {
+    return {
+      nounEn: "greetings",
+      nounJp: "あいさつ",
+      skillEn: "greeting use",
+      skillJp: "あいさつのやりとり",
+    };
+  }
+  if (text.includes("phonics") || text.includes("フォニックス")) {
+    return {
+      nounEn: "phonics sounds",
+      nounJp: "フォニックス",
+      skillEn: "sound recognition",
+      skillJp: "音の読み取り",
+    };
+  }
+  if (
+    text.includes("writing") ||
+    text.includes("letter") ||
+    text.includes("ライティング")
+  ) {
+    return {
+      nounEn: "writing",
+      nounJp: "書く力",
+      skillEn: "letter writing",
+      skillJp: "文字を書く力",
+    };
+  }
+  if (
+    text.includes("question") ||
+    text.includes("why") ||
+    text.includes("質問")
+  ) {
+    return {
+      nounEn: "question response",
+      nounJp: "質問への答え方",
+      skillEn: "answering questions",
+      skillJp: "質問に答える力",
+    };
+  }
+  if (
+    text.includes("verb") ||
+    text.includes("tense") ||
+    text.includes("動詞") ||
+    text.includes("present perfect")
+  ) {
+    return {
+      nounEn: "verb use",
+      nounJp: "動詞の使い方",
+      skillEn: "sentence building",
+      skillJp: "文の組み立て",
+    };
+  }
+  if (
+    text.includes("adjective") ||
+    text.includes("comparative") ||
+    text.includes("superlative") ||
+    text.includes("形容詞") ||
+    text.includes("比較")
+  ) {
+    return {
+      nounEn: "descriptive language",
+      nounJp: "表現の広がり",
+      skillEn: "describing things",
+      skillJp: "説明する力",
+    };
+  }
+  if (
+    text.includes("numbers") ||
+    text.includes("colors") ||
+    text.includes("fruit") ||
+    text.includes("animal") ||
+    text.includes("body") ||
+    text.includes("vehicle") ||
+    text.includes("weather") ||
+    text.includes("country") ||
+    text.includes("food")
+  ) {
+    return {
+      nounEn: "target vocabulary",
+      nounJp: "対象語い",
+      skillEn: "word use",
+      skillJp: "単語の定着",
+    };
+  }
+
+  return {
+    nounEn: "this area",
+    nounJp: "この項目",
+    skillEn: "overall use",
+    skillJp: "全体の使い方",
+  };
+};
+
 const buildRubricTexts = (headings, scores, levelValue = 1) =>
   scores.map((score, idx) => {
     const heading = headings[idx] || FALLBACK_RUBRIC_HEADINGS[idx] || "Skill";
-    const { jp, en } = parseHeadingParts(heading);
-    const labelJp = jp || en;
-    const labelEn = en || jp;
+    const tone = detectRubricTone(heading);
     const seed = levelValue * 17 + idx * 11 + (score || 1);
 
     const templatesByScore = {
       1: [
         {
-          en: `${labelEn} is just starting to develop. With a little more guided practice, this area will become more comfortable.`,
-          jp: `${labelJp}はこれから少しずつ伸ばしていきたい項目です。くり返し練習しながら自信につなげていきましょう。`,
+          en: `${tone.nounEn} is still developing. A little more practice will help.`,
+          jp: `${tone.nounJp}はこれから少しずつ伸ばしていきましょう。`,
         },
         {
-          en: `${labelEn} is still emerging. Building confidence here step by step will make a big difference.`,
-          jp: `${labelJp}はまだ伸びしろの大きい部分です。小さな成功を重ねながら、少しずつ安定させていきましょう。`,
+          en: `${tone.skillEn} is at an early stage. Steady support will build confidence.`,
+          jp: `${tone.skillJp}はまだ練習中ですが、少しずつ自信につながっていきそうです。`,
         },
       ],
       2: [
         {
-          en: `${labelEn} is beginning to settle. A little more repetition will help this skill become steadier.`,
-          jp: `${labelJp}は少しずつ形になってきています。もう少し反復できると、さらに安定していきそうです。`,
+          en: `${tone.nounEn} is starting to settle. A bit more repetition will help.`,
+          jp: `${tone.nounJp}は少しずつ形になってきています。`,
         },
         {
-          en: `${labelEn} showed a good start today. Continued practice will help this area feel more natural.`,
-          jp: `${labelJp}は良いスタートが見られました。引き続き練習することで、もっと自然に使えるようになりそうです。`,
+          en: `${tone.skillEn} showed a good start today. It should become smoother with practice.`,
+          jp: `${tone.skillJp}は良いスタートが見られました。くり返しでさらに自然になりそうです。`,
         },
       ],
       3: [
         {
-          en: `${labelEn} was handled steadily today. This skill is moving in a positive direction.`,
-          jp: `${labelJp}は今日しっかり取り組めていました。着実に力がついてきています。`,
+          en: `${tone.nounEn} was steady today. Nice progress is showing.`,
+          jp: `${tone.nounJp}は安定していて、良い成長が見られました。`,
         },
         {
-          en: `${labelEn} was reasonably secure today. With continued exposure, this can become a stronger point.`,
-          jp: `${labelJp}は今日安定して取り組めていました。経験を重ねることで、さらに強みになっていきそうです。`,
+          en: `${tone.skillEn} was reasonably secure today. This is moving in a good direction.`,
+          jp: `${tone.skillJp}はしっかりしてきていて、順調に伸びています。`,
         },
       ],
       4: [
         {
-          en: `${labelEn} was a clear strength today. The student was able to use this skill with growing independence.`,
-          jp: `${labelJp}は今日の大きな強みの一つでした。自分の力で使える場面がしっかり増えてきています。`,
+          en: `${tone.nounEn} was a clear strength today. It was used with confidence.`,
+          jp: `${tone.nounJp}は今日の強みの一つで、自信を持って取り組めていました。`,
         },
         {
-          en: `${labelEn} was very well developed today. There was clear confidence and control in this area.`,
-          jp: `${labelJp}はとても良くできていました。この項目では自信と安定感がしっかり見られました。`,
+          en: `${tone.skillEn} was very good today. There was clear confidence here.`,
+          jp: `${tone.skillJp}はとても良くできていて、安定感がありました。`,
         },
       ],
       5: [
         {
-          en: `${labelEn} stood out beautifully today. This was an especially confident and polished part of the performance.`,
-          jp: `${labelJp}は今日特によく光っていました。とても自信があり、完成度の高い取り組みでした。`,
+          en: `${tone.nounEn} stood out beautifully today. Excellent work.`,
+          jp: `${tone.nounJp}は特によくできていて、とても印象的でした。`,
         },
         {
-          en: `${labelEn} was excellent today. The student used this area with confidence, accuracy, and strong presence.`,
-          jp: `${labelJp}は非常に素晴らしかったです。自信、正確さ、表現力のどれもがしっかり感じられました。`,
+          en: `${tone.skillEn} was excellent today. Confident and polished throughout.`,
+          jp: `${tone.skillJp}は非常に素晴らしく、自信を持って表現できていました。`,
         },
       ],
     };
