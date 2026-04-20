@@ -1973,9 +1973,14 @@ body {
   }
 
   .certificate-screen {
+    width: 297mm !important;
+    height: 210mm !important;
     min-height: auto !important;
     background: #ffffff !important;
     padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    display: block !important;
   }
 
   .no-print,
@@ -1986,9 +1991,9 @@ body {
 
   .certificate-shell {
     --cert-scale: 1;
-    width: 100%;
-    min-height: auto;
-    height: auto;
+    width: 297mm;
+    min-height: 210mm;
+    height: 210mm;
     margin: 0;
     padding: 0;
     display: flex;
@@ -2002,7 +2007,7 @@ body {
     width: 297mm;
     height: 210mm;
     margin: 0;
-    padding: 6mm;
+    padding: 5.2mm;
     border: 1.8px solid rgba(164, 108, 48, 0.84);
     box-shadow: none;
     transform: none !important;
@@ -2012,7 +2017,7 @@ body {
   }
 
   .certificate-page::before {
-    inset: 10px;
+    inset: 8px;
   }
 
   .certificate-page--a5 {
@@ -2036,5 +2041,130 @@ body {
     box-shadow: none;
     break-inside: avoid-page;
     page-break-inside: avoid;
+    width: 297mm !important;
+    height: 210mm !important;
+  }
+
+  .certificate-content {
+    gap: 6px;
+  }
+
+  .certificate-meta {
+    font-size: 11px;
+  }
+
+  .school-logo {
+    height: 66px;
+  }
+
+  .school-mascot-head {
+    width: 46px;
+    height: 46px;
+  }
+
+  .meta-right {
+    gap: 8px;
+    font-size: 10.5px;
+  }
+
+  .meta-chip {
+    padding: 5px 9px;
+  }
+
+  .certificate-body {
+    gap: 8px;
+  }
+
+  .certificate-header {
+    padding: 7px 10px;
+    border-radius: 14px;
+  }
+
+  .header-title {
+    font-size: 16px;
+  }
+
+  .certificate-header .text-lg {
+    font-size: 1.05rem;
+    line-height: 1.15;
+  }
+
+  .radar-wrap,
+  .message-box,
+  .rubric-card {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 248, 239, 0.96));
+    border: 1px solid rgba(197, 150, 94, 0.5);
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .radar-wrap {
+    padding: 6px 8px 2px;
+    border-radius: 16px;
+  }
+
+  .radar-svg {
+    max-width: 238px;
+  }
+
+  .radar-legend {
+    max-width: 240px;
+    gap: 3px 7px;
+    font-size: 9.2px;
+  }
+
+  .certificate-ribbon {
+    padding: 6px 12px;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+  }
+
+  .message-box {
+    min-height: 74px;
+    padding: 9px 11px;
+    font-size: 9.7px;
+    line-height: 1.42;
+  }
+
+  .rubric-grid {
+    gap: 6px !important;
+  }
+
+  .rubric-card {
+    padding: 6px 7px;
+    gap: 4px;
+    border-radius: 14px;
+  }
+
+  .rubric-title {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .rubric-pill {
+    padding: 4px 8px;
+    font-size: 9.4px;
+    line-height: 1.22;
+  }
+
+  .rubric-score {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .rubric-score .rating-dot {
+    transform: scale(0.86);
+    transform-origin: center;
+  }
+
+  .rubric-body-box {
+    min-height: 54px;
+    padding: 4px 6px;
+    border-radius: 11px;
+  }
+
+  .rubric-body {
+    font-size: 8.8px;
+    line-height: 1.3;
   }
 }
