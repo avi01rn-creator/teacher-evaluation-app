@@ -12,8 +12,8 @@ const CERT_BOX_COUNT = 6;
 const RADAR_LABELS = ["Listening", "Reading", "Writing", "Speaking", "Attitude"];
 const PUBLIC_GOOGLE_CONFIG = {
   clientId:
-    "275262601989-oih2lqfh9droijqob2bkdnbbn6q5aqfp.apps.googleusercontent.com",
-  driveFolderId: "1eXKxWUTNcs55RjEbcS8TGXc6DY3QaoYK",
+    "281663234879-cq5oth1b8e87esu1cmvujtquje032g0o.apps.googleusercontent.com",
+  driveFolderId: "1LrRWdQbcYhbcbJj-hwbKl3WHJAi2WHq8",
 };
 const GOOGLE_CLIENT_ID =
   import.meta.env.VITE_GOOGLE_CLIENT_ID || PUBLIC_GOOGLE_CONFIG.clientId;
