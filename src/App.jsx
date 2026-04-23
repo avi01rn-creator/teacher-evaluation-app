@@ -169,6 +169,11 @@ const averageToFive = (values) => {
 const pickVariant = (variants, seed = 0) =>
   variants[Math.abs(seed) % variants.length];
 
+const sentenceCase = (text) => {
+  if (!text) return text;
+  return text.replace(/(^|[\n.!?]\s+)([a-z])/g, (_, prefix, char) => `${prefix}${char.toUpperCase()}`);
+};
+
 const buildFocusStep = (focusHeading, levelValue = 1) => {
   const { jp, en } = parseHeadingParts(focusHeading || "");
   const english = (en || focusHeading || "this area").toLowerCase();
@@ -399,7 +404,7 @@ const buildRubricTexts = (headings, scores, levelValue = 1) =>
     };
 
     const chosen = pickVariant(templatesByScore[score || 1], seed);
-    return `${chosen.en}\n${chosen.jp}`;
+    return `${sentenceCase(chosen.en)}\n${chosen.jp}`;
   });
 
 const buildAutoMessage = ({
